@@ -10,12 +10,11 @@ namespace DataLayer.Context;
 
 public partial class ApplicationContext : DbContext
 {
-    private readonly ILoggerFactory _loggerFactory;
 
-    public ApplicationContext(DbContextOptions<ApplicationContext> options, ILoggerFactory loggerFactory) :
+
+    public ApplicationContext(DbContextOptions<ApplicationContext> options) :
         base(options)
     {
-        _loggerFactory = loggerFactory;
     }
 
     public virtual DbSet<OrderStatus> OrderStatus { get; set; }
@@ -98,7 +97,6 @@ public partial class ApplicationContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseLoggerFactory(_loggerFactory);
     }
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }
