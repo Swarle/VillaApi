@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DataLayer.Context;
 using DataLayer.Repository.Interfaces;
-using DataLayer.Specification;
+using DataLayer.Specification.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataLayer.Repository

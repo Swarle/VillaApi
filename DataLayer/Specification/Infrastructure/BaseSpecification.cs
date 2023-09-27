@@ -9,14 +9,14 @@ using DataLayer.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 
-namespace DataLayer.Specification
+namespace DataLayer.Specification.Infrastructure
 {
     public abstract class BaseSpecification<TEntity> : ISpecification<TEntity> where TEntity : class
     {
         public Expression<Func<TEntity, bool>> Expression { get; }
         public List<Expression<Func<TEntity, object>>> IncludeExpressions { get; set; } =
             new List<Expression<Func<TEntity, object>>>();
-        public PagingSpecification Paging { get; set;}
+        public PagingSpecification Paging { get; set; }
 
 
         protected BaseSpecification(Expression<Func<TEntity, bool>> expression)
@@ -43,7 +43,7 @@ namespace DataLayer.Specification
         public bool IsSatisfied(TEntity obj)
         {
             bool result = Expression.Compile().Invoke(obj);
-            
+
             return result;
         }
     }

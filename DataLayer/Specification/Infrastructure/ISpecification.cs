@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataLayer.Specification
+namespace DataLayer.Specification.Infrastructure
 {
     public interface ISpecification<TEntity> where TEntity : class
     {

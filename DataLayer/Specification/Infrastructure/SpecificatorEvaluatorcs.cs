@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
-namespace DataLayer.Specification
+namespace DataLayer.Specification.Infrastructure
 {
     public static class SpecificationEvaluator<TEntity> where TEntity : class
     {
@@ -22,7 +22,7 @@ namespace DataLayer.Specification
 
             if (specification.IncludeExpressions.Count > 0)
             {
-                query = specification.IncludeExpressions.Aggregate((query), (current, include) =>
+                query = specification.IncludeExpressions.Aggregate(query, (current, include) =>
                     current.Include(include));
             }
 
