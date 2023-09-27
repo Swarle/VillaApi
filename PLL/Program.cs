@@ -2,6 +2,8 @@ using DataLayer.Context;
 using DataLayer.Models;
 using DataLayer.Repository;
 using DataLayer.Repository.Interfaces;
+using DataLayer.UnitOfWork;
+using DataLayer.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PLL.Infrastructure;
 using Serilog;
@@ -37,6 +39,8 @@ namespace PLL
             builder.Services.AddScoped<IRepository<Users>, UserRepository>();
             builder.Services.AddScoped<IRepository<VillaDetails>,VillaDetailsRepository>();
             builder.Services.AddScoped<IRepository<VillaStatus>, Repository<VillaStatus>>();
+
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             
             builder.Services.AddDbContext<ApplicationContext>(options =>
             {
