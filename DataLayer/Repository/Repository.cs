@@ -25,11 +25,11 @@ namespace DataLayer.Repository
         {
             await _dbSet.AddAsync(entity);
         }
-        public async Task<TEntity?> GetByIdAsync(Guid id)
+        public virtual async Task<TEntity?> GetByIdAsync(Guid id)
         {
             return await _dbSet.FindAsync(id);
         }
-        public async Task<IEnumerable<TEntity>> GetAllAsync()
+        public virtual async Task<IEnumerable<TEntity>> GetAllAsync()
         {
             return await _dbSet.ToListAsync();
         }
@@ -37,11 +37,11 @@ namespace DataLayer.Repository
         {
             _dbSet.Update(entity);
         }
-        public  void Delete(TEntity entity)
+        public virtual void Delete(TEntity entity)
         {
              _dbSet.Remove(entity);
         }
-        public async Task<IEnumerable<TEntity>> Find(ISpecification<TEntity> specification)
+        public virtual async Task<IEnumerable<TEntity>> Find(ISpecification<TEntity> specification)
         {
             var query = SpecificationEvaluator<TEntity>.GetQuery(_dbSet.AsQueryable(), specification);
             return await query.ToListAsync();

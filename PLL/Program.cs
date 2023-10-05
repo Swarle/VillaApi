@@ -1,3 +1,6 @@
+using BusinessLogicLayer.Infastructure;
+using BusinessLogicLayer.Services;
+using BusinessLogicLayer.Services.Interfaces;
 using DataLayer.Context;
 using DataLayer.Models;
 using DataLayer.Repository;
@@ -5,7 +8,7 @@ using DataLayer.Repository.Interfaces;
 using DataLayer.UnitOfWork;
 using DataLayer.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using PLL.Infrastructure;
+using PLL.Controllers;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
@@ -39,6 +42,9 @@ namespace PLL
             builder.Services.AddScoped<IRepository<Users>, UserRepository>();
             builder.Services.AddScoped<IRepository<VillaDetails>,VillaDetailsRepository>();
             builder.Services.AddScoped<IRepository<VillaStatus>, Repository<VillaStatus>>();
+
+            builder.Services.AddAutoMapper(typeof(MappingConfig));
+            builder.Services.AddScoped<IVillaService,VillaService>();
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             
