@@ -23,13 +23,22 @@ namespace PLL.Controllers
         }
 
         // GET: api/<VillaController>
-        [HttpGet]
-        public async Task<ActionResult<ApiResponse>> GetVillas()
+        [HttpGet("get-villa-partial")]
+        public async Task<ActionResult<ApiResponse>> GetVillasPartial()
         {
             var response = await _villaService.GetVillasPartialAsync();
 
             return StatusCode((int)response.StatusCode,response);
         }
+
+        [HttpGet("get-villa")]
+        public async Task<ActionResult<ApiResponse>> GetVilla()
+        {
+            var response = await _villaService.GetVillasAsync();
+
+            return StatusCode((int)response.StatusCode, response);
+        }
+
 
         
     }

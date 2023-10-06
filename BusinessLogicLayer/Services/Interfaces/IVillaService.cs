@@ -10,5 +10,6 @@ namespace BusinessLogicLayer.Services.Interfaces
     public interface IVillaService
     {
         Task<ApiResponse> GetVillasPartialAsync();
+        Task<ApiResponse> GetVillasAsync();
     }
 }

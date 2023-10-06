@@ -40,7 +40,7 @@ namespace DataLayer.Specification.Infrastructure
         }
 
 
-        public bool IsSatisfied(TEntity obj)
+        public virtual bool IsSatisfied(TEntity obj)
         {
             bool result = Expression.Compile().Invoke(obj);
 
