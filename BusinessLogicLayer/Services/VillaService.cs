@@ -55,7 +55,7 @@ namespace BusinessLogicLayer.Services
 
             var villas = await _unitOfWork.Villas.Find(specification);
 
-            if (villas.Any(x => specification.IsSatisfied(x)))
+            if (!villas.Any(x => specification.IsSatisfied(x)))
             {
                 //TODO: Make new exception for these situations
                 throw new Exception("The received entities do not match the predicate");

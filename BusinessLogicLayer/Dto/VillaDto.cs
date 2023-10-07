@@ -20,5 +20,6 @@ namespace BusinessLogicLayer.Dto
         public int? Occupancy { get; set; }
         public Guid VillaStatusId { get; set; }
         public string VillaStatus { get; set; } = null!;
+        public decimal Price { get; set; }
     }
 }

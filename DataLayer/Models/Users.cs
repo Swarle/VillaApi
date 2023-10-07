@@ -30,11 +30,11 @@ public partial class Users
     [Column("hashed_password")]
     public string HashedPassword { get; set; } = null!;
 
-    [Column("created_date")]
-    public DateTime CreatedDate { get; set; }
-
     [Column("role_id")]
     public Guid RoleId { get; set; }
+
+    [Column("created_date")]
+    public DateTime CreatedDate { get; set; }
 
     [InverseProperty("User")]
     public virtual ICollection<Orders> Orders { get; set; } = new List<Orders>();

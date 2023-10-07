@@ -33,15 +33,11 @@ public partial class Villa
     [Column("villa_number")]
     public int VillaNumber { get; set; }
 
-    [Column("order_id")]
-    public Guid OrderId { get; set; }
-
     [Column("status_id")]
     public Guid StatusId { get; set; }
 
-    [ForeignKey("OrderId")]
-    [InverseProperty("Villa")]
-    public virtual Orders Order { get; set; } = null!;
+    [Column("price", TypeName = "money")]
+    public decimal Price { get; set; }
 
     [ForeignKey("StatusId")]
     [InverseProperty("Villa")]
@@ -50,4 +46,8 @@ public partial class Villa
     [ForeignKey("VillaDetailsId")]
     [InverseProperty("Villa")]
     public virtual VillaDetails VillaDetails { get; set; } = null!;
+
+    [ForeignKey("VillaId")]
+    [InverseProperty("Villa")]
+    public virtual ICollection<Orders> Order { get; set; } = new List<Orders>();
 }

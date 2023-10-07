@@ -15,6 +15,10 @@
    "SelectedToBeGenerated": 0,
    "Tables": [
       {
+         "Name": "[dbo].[occupied_villa]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[order_status]",
          "ObjectType": 0
       },
