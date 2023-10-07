@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -48,7 +49,7 @@ namespace BusinessLogicLayer.Services
 
         public async Task<ApiResponse> GetVillasAsync()
         {
-            ApiResponse result = new ApiResponse();
+            ApiResponse response = new ApiResponse();
 
             ISpecification<Villa> specification = new VillaWithDetailsAndStatusSpecification();
 
@@ -62,9 +63,35 @@ namespace BusinessLogicLayer.Services
 
             var villasDto = _mapper.Map<IEnumerable<VillaDto>>(villas);
 
-            result.Result = villasDto;
-            result.StatusCode = HttpStatusCode.OK;
-            return result;
+            response.Result = villasDto;
+            response.StatusCode = HttpStatusCode.OK;
+            return response;
+        }
+
+        public async Task<ApiResponse> GetVillaByIdAsync(Guid id)
+        {
+            var response = new ApiResponse();
+
+            if (id == Guid.Empty)
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
+            }
+
+            var specification = new VillaWithDetailsAndStatusSpecification(id);
+            var villas = await _unitOfWork.Villas.Find(specification);
+            var villa = villas.SingleOrDefault();
+
+            if (villa == null)
+            {
+                response.StatusCode = HttpStatusCode.NotFound;
+                return response;
+            }
+
+            response.Result = _mapper.Map<VillaDto>(villa);
+            response.StatusCode = HttpStatusCode.OK;
+
+            return response;
         }
     }
 }

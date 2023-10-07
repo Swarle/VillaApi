@@ -43,8 +43,8 @@ namespace DataLayer.Repository
         }
         public virtual async Task<IEnumerable<TEntity>> Find(ISpecification<TEntity> specification)
         {
-            var query = SpecificationEvaluator<TEntity>.GetQuery(_dbSet.AsQueryable(), specification);
-            return await query.ToListAsync();
+            return await SpecificationEvaluator<TEntity>.GetQuery(_dbSet.AsQueryable(), specification).ToListAsync();
+            
         }
 
     }

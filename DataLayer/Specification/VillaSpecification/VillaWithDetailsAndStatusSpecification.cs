@@ -12,13 +12,23 @@ namespace DataLayer.Specification.VillaSpecification
     {
         public VillaWithDetailsAndStatusSpecification()
         {
-            AddInclude(x => x.VillaDetails);
-            AddInclude(x => x.Status);
+            Includes();
+        }
+
+        public VillaWithDetailsAndStatusSpecification(Guid id) : base(x => x.Id == id)
+        {
+            Includes();
         }
 
         public override bool IsSatisfied(Villa obj)
         {
             return !(obj.VillaDetails == null && obj.Status == null && obj.VillaDetailsId == Guid.Empty && obj.StatusId == Guid.Empty);
+        }
+
+        private void Includes()
+        {
+            AddInclude(x => x.VillaDetails);
+            AddInclude(x => x.Status);
         }
     }
 }

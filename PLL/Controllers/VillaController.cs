@@ -30,16 +30,24 @@ namespace PLL.Controllers
 
             return StatusCode((int)response.StatusCode,response);
         }
-
-        [HttpGet("get-villa")]
-        public async Task<ActionResult<ApiResponse>> GetVilla()
+        
+        [HttpGet("get-villas")]
+        public async Task<ActionResult<ApiResponse>> GetVillas()
         {
             var response = await _villaService.GetVillasAsync();
 
             return StatusCode((int)response.StatusCode, response);
         }
 
+        [HttpGet("get-villa/{id:Guid}")]
+        public async Task<ActionResult<ApiResponse>> GetVilla(Guid id)
+        {
+            var response = await _villaService.GetVillaByIdAsync(id);
 
-        
+            return StatusCode((int)response.StatusCode, response);
+        }
+
+
+
     }
 }
