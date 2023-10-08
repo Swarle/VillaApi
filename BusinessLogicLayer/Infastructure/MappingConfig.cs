@@ -36,6 +36,20 @@ namespace BusinessLogicLayer.Infastructure
                 .ForMember(dest => dest.VillaStatus, opt =>
                     opt.MapFrom(src => src.Status.Status));
 
+            CreateMap<VillaCreateDto, Villa>()
+                .ForMember(dest => dest.VillaDetails, opt =>
+                    opt.MapFrom((dto, villa) => new VillaDetails()
+                    {
+                        Rate = dto.Rate,
+                        Sqmt = dto.Sqmt,
+                        Occupancy = dto.Occupancy,
+                        Villa = villa,
+
+                    }));
+
+            //CreateMap<VillaCreateDto, Villa>()
+            //    .ForMember(dest => dest.VillaDetails, opt => opt.MapFrom(s => s));
+
         }
     }   
 }

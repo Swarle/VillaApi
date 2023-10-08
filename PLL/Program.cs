@@ -21,6 +21,8 @@ namespace PLL
         {
             var logger = new LoggerConfiguration()
                 .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Information)
+                .MinimumLevel.Warning()
+                .MinimumLevel.Override("Microsoft.EntityFrameworkCore",LogEventLevel.Verbose)
                 .WriteTo
                 .Console(outputTemplate: "{Timestamp:HH:mm:ss}  [{Level:}] {SourceContext}  \n{Message:l}\n{Exception}",
                     theme: AnsiConsoleTheme.Code)

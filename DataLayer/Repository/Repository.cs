@@ -43,9 +43,17 @@ namespace DataLayer.Repository
         }
         public virtual async Task<IEnumerable<TEntity>> Find(ISpecification<TEntity> specification)
         {
-            return await SpecificationEvaluator<TEntity>.GetQuery(_dbSet.AsQueryable(), specification).ToListAsync();
-            
+            return await ApplySpecification(specification).ToListAsync();
         }
 
+        public virtual async Task<TEntity?> FindSingle(ISpecification<TEntity> specification)
+        {
+            return await ApplySpecification(specification).SingleOrDefaultAsync();
+        }
+
+        private IQueryable<TEntity> ApplySpecification(ISpecification<TEntity> specification)
+        {
+            return SpecificationEvaluator<TEntity>.GetQuery(_dbSet.AsQueryable(), specification);
+        }
     }
 }

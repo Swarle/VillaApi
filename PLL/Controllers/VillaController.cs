@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using BusinessLogicLayer.Dto;
 using BusinessLogicLayer.Infrastructure;
 using BusinessLogicLayer.Services.Interfaces;
 using DataLayer.Context;
@@ -21,7 +22,6 @@ namespace PLL.Controllers
             _villaService = villaService;
         }
 
-        // GET: api/<VillaController>
         [HttpGet("get-villa-partial")]
         public async Task<ActionResult<ApiResponse>> GetVillasPartial()
         {
@@ -42,6 +42,14 @@ namespace PLL.Controllers
         public async Task<ActionResult<ApiResponse>> GetVilla(Guid id)
         {
             var response = await _villaService.GetVillaByIdAsync(id);
+
+            return StatusCode((int)response.StatusCode, response);
+        }
+
+        [HttpPost("create-villa")]
+        public async Task<ActionResult<ApiResponse>> CreateVilla([FromBody] VillaCreateDto createDto)
+        {
+            var response = await _villaService.CreateVillaAsync(createDto);
 
             return StatusCode((int)response.StatusCode, response);
         }

@@ -15,6 +15,7 @@ public partial class ApplicationContext : DbContext
     public ApplicationContext(DbContextOptions<ApplicationContext> options) :
         base(options)
     {
+        
     }
 
     public virtual DbSet<OrderStatus> OrderStatus { get; set; }
@@ -112,6 +113,7 @@ public partial class ApplicationContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+        
     }
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

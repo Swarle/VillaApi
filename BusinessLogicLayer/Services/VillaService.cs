@@ -9,10 +9,13 @@ using AutoMapper;
 using BusinessLogicLayer.Dto;
 using BusinessLogicLayer.Infrastructure;
 using BusinessLogicLayer.Services.Interfaces;
+using DataLayer.Infastructure;
 using DataLayer.Models;
 using DataLayer.Specification.Infrastructure;
 using DataLayer.Specification.VillaSpecification;
+using DataLayer.Specification.VillaStatusSpecification;
 using DataLayer.UnitOfWork.Interfaces;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BusinessLogicLayer.Services
 {
@@ -85,6 +88,64 @@ namespace BusinessLogicLayer.Services
             if (villa == null)
             {
                 response.StatusCode = HttpStatusCode.NotFound;
+                return response;
+            }
+
+            response.Result = _mapper.Map<VillaDto>(villa);
+            response.StatusCode = HttpStatusCode.OK;
+
+            return response;
+        }
+
+        public async Task<ApiResponse> CreateVillaAsync(VillaCreateDto villaDto)
+        {
+            var response = new ApiResponse();
+
+            if (villaDto.IsNullOrEmpty())
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;
+                response.ErrorMessage.Add("Villa is null or empty!");
+                return response;
+            }
+
+            var villaSpecification = new IfVillaExist(villaDto.Name, villaDto.VillaNumber);
+
+            var isExist = await _unitOfWork.Villas.FindSingle(villaSpecification);
+            
+            if (isExist != null)
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;
+                response.ErrorMessage.Add("Villa already exists!");
+                return response;
+            }
+
+            var villa = _mapper.Map<Villa>(villaDto);
+
+            var villaStatusSpecification = new GetVillaStatusByName(StatusesSD.Available);
+
+            var status = await _unitOfWork.VillaStatus.FindSingle(villaStatusSpecification);
+
+            if (status == null)
+            {
+                response.IsSuccess = false;
+                response.StatusCode = HttpStatusCode.InternalServerError;
+                response.ErrorMessage.Add("Status Available does not exist!");
+                return response;
+            }
+
+            villa.Status = status;
+            villa.StatusId = status.Id;
+
+            try
+            {
+                await _unitOfWork.Villas.CreateAsync(villa);
+                await _unitOfWork.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.StatusCode = HttpStatusCode.InternalServerError;
+                response.ErrorMessage.Add(ex.Message);
                 return response;
             }
 

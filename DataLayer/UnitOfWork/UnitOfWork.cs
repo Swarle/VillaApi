@@ -14,7 +14,7 @@ namespace DataLayer.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly ApplicationContext _context;
+        private  ApplicationContext _context;
         private IRepository<Villa> _villas;
         private IRepository<Orders> _orders;
         private IRepository<OrderStatus> _orderStatus;
