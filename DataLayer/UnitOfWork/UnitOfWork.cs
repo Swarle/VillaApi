@@ -35,7 +35,7 @@ namespace DataLayer.UnitOfWork
             {
                 if (_villas == null)
                 {
-                    _villas = new Repository<Villa>(_context);
+                    _villas = new VillaRepository(_context);
                 }
 
                 return _villas;
@@ -100,7 +100,7 @@ namespace DataLayer.UnitOfWork
             {
                 if (_villaDetails == null)
                 {
-                    _villaDetails = new VillaDetailsRepository(_context);
+                    _villaDetails = new Repository<VillaDetails>(_context);
                 }
 
                 return _villaDetails;

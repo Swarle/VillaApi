@@ -22,7 +22,7 @@ namespace PLL
             var logger = new LoggerConfiguration()
                 .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Information)
                 .MinimumLevel.Warning()
-                .MinimumLevel.Override("Microsoft.EntityFrameworkCore",LogEventLevel.Verbose)
+                .MinimumLevel.Override("Microsoft.EntityFrameworkCore",LogEventLevel.Information)
                 .WriteTo
                 .Console(outputTemplate: "{Timestamp:HH:mm:ss}  [{Level:}] {SourceContext}  \n{Message:l}\n{Exception}",
                     theme: AnsiConsoleTheme.Code)
@@ -37,12 +37,12 @@ namespace PLL
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddScoped<IRepository<Villa>, Repository<Villa>>();
+            builder.Services.AddScoped<IRepository<Villa>, VillaRepository>();
             builder.Services.AddScoped<IRepository<Orders>, OrderRepository>();
             builder.Services.AddScoped<IRepository<OrderStatus>, Repository<OrderStatus>>();
             builder.Services.AddScoped<IRepository<Role>, Repository<Role>>();
             builder.Services.AddScoped<IRepository<Users>, UserRepository>();
-            builder.Services.AddScoped<IRepository<VillaDetails>,VillaDetailsRepository>();
+            builder.Services.AddScoped<IRepository<VillaDetails>,Repository<VillaDetails>>();
             builder.Services.AddScoped<IRepository<VillaStatus>, Repository<VillaStatus>>();
 
             builder.Services.AddAutoMapper(typeof(MappingConfig));

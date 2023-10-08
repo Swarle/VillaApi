@@ -47,9 +47,17 @@ namespace PLL.Controllers
         }
 
         [HttpPost("create-villa")]
-        public async Task<ActionResult<ApiResponse>> CreateVilla([FromBody] VillaCreateDto createDto)
+        public async Task<ActionResult<ApiResponse>> CreateVillaAsync([FromBody] VillaCreateDto createDto)
         {
             var response = await _villaService.CreateVillaAsync(createDto);
+
+            return StatusCode((int)response.StatusCode, response);
+        }
+
+        [HttpPut("update-villa")]
+        public async Task<ActionResult<ApiResponse>> UpdateVillaAsync([FromBody] VillaUpdateDto updateDto)
+        {
+            var response = await _villaService.UpdateVillaAsync(updateDto);
 
             return StatusCode((int)response.StatusCode, response);
         }

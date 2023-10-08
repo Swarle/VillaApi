@@ -32,6 +32,11 @@ namespace DataLayer.Specification.Infrastructure
                     .Take(specification.Paging.Take);
             }
 
+            if (specification.AsNoTracking)
+            {
+                query = query.AsNoTracking();
+            }
+
             return query;
         }
     }

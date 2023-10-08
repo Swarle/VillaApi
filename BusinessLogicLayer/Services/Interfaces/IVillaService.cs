@@ -14,5 +14,6 @@ namespace BusinessLogicLayer.Services.Interfaces
         Task<ApiResponse> GetVillasAsync();
         Task<ApiResponse> GetVillaByIdAsync(Guid id);
         Task<ApiResponse> CreateVillaAsync(VillaCreateDto villaDto);
+        Task<ApiResponse> UpdateVillaAsync(VillaUpdateDto updateDto);
     }
 }

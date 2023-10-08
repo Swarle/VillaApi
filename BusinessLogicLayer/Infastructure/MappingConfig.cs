@@ -44,8 +44,19 @@ namespace BusinessLogicLayer.Infastructure
                         Sqmt = dto.Sqmt,
                         Occupancy = dto.Occupancy,
                         Villa = villa,
-
                     }));
+
+            CreateMap<VillaUpdateDto, Villa>()
+                .ForMember(dest => dest.VillaDetails, opt =>
+                    opt.MapFrom((dto, villa) => new VillaDetails()
+                    {
+                        Id = dto.VillaDetailsId,
+                        Rate = dto.Rate,
+                        Sqmt = dto.Sqmt,
+                        Occupancy = dto.Occupancy,
+                        Villa = villa,
+                    }))
+                .ForMember(dest => dest.Status, opt => opt.Ignore());
 
             //CreateMap<VillaCreateDto, Villa>()
             //    .ForMember(dest => dest.VillaDetails, opt => opt.MapFrom(s => s));

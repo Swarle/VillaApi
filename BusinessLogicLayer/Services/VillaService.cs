@@ -108,7 +108,7 @@ namespace BusinessLogicLayer.Services
                 return response;
             }
 
-            var villaSpecification = new IfVillaExist(villaDto.Name, villaDto.VillaNumber);
+            var villaSpecification = new IsVillaExist(villaDto.Name, villaDto.VillaNumber);
 
             var isExist = await _unitOfWork.Villas.FindSingle(villaSpecification);
             
@@ -151,6 +151,63 @@ namespace BusinessLogicLayer.Services
 
             response.Result = _mapper.Map<VillaDto>(villa);
             response.StatusCode = HttpStatusCode.OK;
+
+            return response;
+        }
+
+        public async Task<ApiResponse> UpdateVillaAsync(VillaUpdateDto updateDto)
+        {
+            var response = new ApiResponse();
+
+            if (updateDto.IsNullOrEmpty())
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;
+                response.ErrorMessage.Add("Villa is null or empty!");
+                return response;
+            }
+
+            var villaSpecification = new IsVillaExist(updateDto.Id, true);
+
+            var isExist = await _unitOfWork.Villas.FindSingle(villaSpecification);
+
+            if (isExist == null)
+            {
+                response.StatusCode = HttpStatusCode.NotFound;
+                response.ErrorMessage.Add("Villa does not exist!");
+                return response;
+            }
+
+            var villaStatusSpecification = new GetVillaStatusByName(updateDto.Status);
+
+            var status = await _unitOfWork.VillaStatus.FindSingle(villaStatusSpecification);
+
+            if (status == null)
+            {
+                response.StatusCode = HttpStatusCode.NotFound;
+                response.ErrorMessage.Add($"Status {updateDto.Status} does not exist!");
+                return response;
+            }
+
+            var villa = _mapper.Map<Villa>(updateDto);
+
+            villa.StatusId = status.Id;
+            villa.Status = status;
+
+            try
+            {
+                _unitOfWork.Villas.Update(villa);
+                await _unitOfWork.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = HttpStatusCode.InternalServerError;
+                response.IsSuccess = false;
+                response.ErrorMessage.Add(ex.Message);
+                return response;
+            }
+
+            response.StatusCode = HttpStatusCode.OK;
+            response.Result = _mapper.Map<VillaDto>(villa);
 
             return response;
         }
