@@ -6,6 +6,7 @@ using DataLayer.Context;
 using DataLayer.Models;
 using DataLayer.Repository.Interfaces;
 using DataLayer.UnitOfWork.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -61,6 +62,13 @@ namespace PLL.Controllers
 
             return StatusCode((int)response.StatusCode, response);
         }
+
+        //[HttpDelete("delete-villa/{id:guid}")]
+        ////[Authorize]
+        //public async Task<ActionResult<ApiResponse>> DeleteVillaAsync(Guid id)
+        //{
+
+        //}
 
 
 

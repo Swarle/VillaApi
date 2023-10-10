@@ -1,3 +1,4 @@
+using BusinessLogicLayer;
 using BusinessLogicLayer.Infastructure;
 using BusinessLogicLayer.Services;
 using BusinessLogicLayer.Services.Interfaces;
@@ -44,9 +45,14 @@ namespace PLL
             builder.Services.AddScoped<IRepository<Users>, UserRepository>();
             builder.Services.AddScoped<IRepository<VillaDetails>,Repository<VillaDetails>>();
             builder.Services.AddScoped<IRepository<VillaStatus>, Repository<VillaStatus>>();
+            
+
+            builder.Services.AddSingleton<JwtTokenHandler>();
 
             builder.Services.AddAutoMapper(typeof(MappingConfig));
+
             builder.Services.AddScoped<IVillaService,VillaService>();
+            builder.Services.AddScoped<IUserService,UserService>();
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             

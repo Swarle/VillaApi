@@ -20,6 +20,7 @@ namespace DataLayer.Repository
         public override async Task CreateAsync(Users entity)
         {
             entity.CreatedDate = DateTime.Now;
+
             await _context.AddAsync(entity);
         }
     }

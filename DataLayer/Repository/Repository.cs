@@ -51,6 +51,11 @@ namespace DataLayer.Repository
             return await ApplySpecification(specification).SingleOrDefaultAsync();
         }
 
+        public virtual async Task<bool> FindAny(ISpecification<TEntity> specification)
+        {
+            return await ApplySpecification(specification).AnyAsync();
+        }
+
         private IQueryable<TEntity> ApplySpecification(ISpecification<TEntity> specification)
         {
             return SpecificationEvaluator<TEntity>.GetQuery(_dbSet.AsQueryable(), specification);

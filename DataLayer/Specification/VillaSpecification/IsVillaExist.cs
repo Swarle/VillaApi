@@ -10,7 +10,7 @@ namespace DataLayer.Specification.VillaSpecification
 {
     public class IsVillaExist : BaseSpecification<Villa>
     {
-        public IsVillaExist( string name, int villaNumber) : base(v => v.Name == name || v.VillaNumber == villaNumber)
+        public IsVillaExist(string name, int villaNumber) : base(v => v.Name == name || v.VillaNumber == villaNumber)
         {
 
         }

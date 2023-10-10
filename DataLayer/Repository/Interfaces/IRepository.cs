@@ -16,5 +16,6 @@ namespace DataLayer.Repository.Interfaces
         public void Delete(TEntity entity);
         public Task<IEnumerable<TEntity>> Find(ISpecification<TEntity> specification);
         public Task<TEntity?> FindSingle(ISpecification<TEntity> specification);
+        Task<bool> FindAny(ISpecification<TEntity> specification);
     }
 }

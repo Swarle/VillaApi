@@ -14,6 +14,7 @@ namespace BusinessLogicLayer.Infastructure
         public MappingConfig()
         {
             VillaMapConfiguration();
+            UserMapConfiguration();
         }
 
         private void VillaMapConfiguration()
@@ -60,6 +61,17 @@ namespace BusinessLogicLayer.Infastructure
 
             //CreateMap<VillaCreateDto, Villa>()
             //    .ForMember(dest => dest.VillaDetails, opt => opt.MapFrom(s => s));
+
+        }
+
+        private void UserMapConfiguration()
+        {
+            CreateMap<RegistrationDto, Users>()
+                .ForMember(dest => dest.Role, opt => opt.Ignore());
+
+            CreateMap<Users, UserDto>()
+                .ForMember(dist => dist.Role, opt => 
+                    opt.MapFrom(src => src.Role.RoleName));
 
         }
     }   
