@@ -1,4 +1,5 @@
-﻿using BusinessLogicLayer.Dto;
+﻿using System.Text;
+using BusinessLogicLayer.Dto;
 using BusinessLogicLayer.Infrastructure;
 using BusinessLogicLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -24,6 +25,7 @@ namespace PLL.Controllers
 
             return StatusCode((int)response.StatusCode, response);
         }
+
 
         [HttpPost("register")]
         public async Task<ActionResult<ApiResponse>> RegisterAsync([FromBody] RegistrationDto registerDto)
