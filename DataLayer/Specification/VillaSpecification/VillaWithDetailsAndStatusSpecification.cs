@@ -15,9 +15,10 @@ namespace DataLayer.Specification.VillaSpecification
             Includes();
         }
 
-        public VillaWithDetailsAndStatusSpecification(Guid id) : base(x => x.Id == id)
+        public VillaWithDetailsAndStatusSpecification(Guid id, bool asNoTracking = false) : base(x => x.Id == id)
         {
             Includes();
+            AsNoTracking = asNoTracking;
         }
 
         public override bool IsSatisfied(Villa obj)

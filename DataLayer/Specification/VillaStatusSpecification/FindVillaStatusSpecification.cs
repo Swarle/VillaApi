@@ -8,8 +8,8 @@ using DataLayer.Specification.Infrastructure;
 
 namespace DataLayer.Specification.VillaStatusSpecification
 {
-    public class GetVillaStatusByName : BaseSpecification<VillaStatus>
+    public class FindVillaStatusSpecification : BaseSpecification<VillaStatus>
     {
-        public GetVillaStatusByName(string status) : base(s => s.Status == status) { }
+        public FindVillaStatusSpecification(string status) : base(s => s.Status == status) { }
     }
 }

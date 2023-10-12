@@ -39,7 +39,7 @@ namespace DataLayer.Repository
         }
         public virtual void Delete(TEntity entity)
         {
-             _dbSet.Remove(entity);
+            _dbSet.Remove(entity);
         }
         public virtual async Task<IEnumerable<TEntity>> Find(ISpecification<TEntity> specification)
         {

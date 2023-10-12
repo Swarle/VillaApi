@@ -8,8 +8,8 @@ using DataLayer.Specification.Infrastructure;
 
 namespace DataLayer.Specification.RoleSpecification
 {
-    public class IsRoleExistSpecification : BaseSpecification<Role>
+    public class FindRoleSpecification : BaseSpecification<Role>
     {
-        public IsRoleExistSpecification(string roleName) : base(r => r.RoleName == roleName) { }
+        public FindRoleSpecification(string roleName) : base(r => r.RoleName == roleName) { }
     }
 }

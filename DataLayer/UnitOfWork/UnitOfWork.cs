@@ -23,6 +23,7 @@ namespace DataLayer.UnitOfWork
         private IRepository<VillaDetails> _villaDetails;
         private IRepository<VillaStatus> _villaStatus;
         private IDbContextTransaction _transaction;
+        private bool _isTransactionBeginer = false;
 
         public UnitOfWork(ApplicationContext context)
         {
@@ -128,17 +129,27 @@ namespace DataLayer.UnitOfWork
 
         public async Task BeginTransactionAsync()
         {
-            _transaction = await _context.Database.BeginTransactionAsync();
+            if (_transaction == null && _isTransactionBeginer == false)
+            {
+                _transaction = await _context.Database.BeginTransactionAsync();
+                _isTransactionBeginer = true;
+            }
+
         }
 
         public async Task CommitTransactionAsync()
         {
-            await _transaction.CommitAsync();
+            if (_transaction != null && _isTransactionBeginer == true)
+            {
+                await _transaction.CommitAsync();
+            }
+
         }
 
         public async Task RollbackTransactionAsync()
         {
-            await _transaction.RollbackAsync();
+            if(_isTransactionBeginer == true && _transaction != null)
+                await _transaction.RollbackAsync();
         }
 
 

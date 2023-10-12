@@ -23,7 +23,9 @@ namespace PLL.Controllers
             _villaService = villaService;
         }
 
+
         [HttpGet("get-villa-partial")]
+        [Authorize]
         public async Task<ActionResult<ApiResponse>> GetVillasPartial()
         {
             var response = await _villaService.GetVillasPartialAsync();
@@ -56,6 +58,7 @@ namespace PLL.Controllers
         }
 
         [HttpPut("update-villa")]
+        
         public async Task<ActionResult<ApiResponse>> UpdateVillaAsync([FromBody] VillaUpdateDto updateDto)
         {
             var response = await _villaService.UpdateVillaAsync(updateDto);
@@ -63,12 +66,14 @@ namespace PLL.Controllers
             return StatusCode((int)response.StatusCode, response);
         }
 
-        //[HttpDelete("delete-villa/{id:guid}")]
-        ////[Authorize]
-        //public async Task<ActionResult<ApiResponse>> DeleteVillaAsync(Guid id)
-        //{
+        [HttpDelete("delete-villa/{id:guid}")]
+        //[Authorize(Policy = "AdminPolicy")]
+        public async Task<ActionResult<ApiResponse>> DeleteVillaAsync(Guid id)
+        {
+            var response = await _villaService.DeleteVillaAsync(id);
 
-        //}
+            return StatusCode((int)response.StatusCode,response);
+        }
 
 
 

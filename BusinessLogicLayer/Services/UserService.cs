@@ -50,7 +50,7 @@ namespace BusinessLogicLayer.Services
 
                 var user = _mapper.Map<Users>(registrationDto);
 
-                var roleSpecification = new IsRoleExistSpecification(registrationDto.Role);
+                var roleSpecification = new FindRoleSpecification(registrationDto.Role);
 
                 var role = await _unitOfWork.Role.FindSingle(roleSpecification);
 

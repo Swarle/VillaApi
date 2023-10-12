@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -9,13 +10,14 @@ using AutoMapper;
 using BusinessLogicLayer.Dto;
 using BusinessLogicLayer.Infrastructure;
 using BusinessLogicLayer.Services.Interfaces;
-using DataLayer.Infastructure;
+using Utility;
 using DataLayer.Models;
 using DataLayer.Specification.Infrastructure;
 using DataLayer.Specification.VillaSpecification;
 using DataLayer.Specification.VillaStatusSpecification;
 using DataLayer.UnitOfWork.Interfaces;
 using Microsoft.IdentityModel.Tokens;
+using Azure;
 
 namespace BusinessLogicLayer.Services
 {
@@ -23,193 +25,251 @@ namespace BusinessLogicLayer.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly ApiResponse _response;
 
         public VillaService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _response = new ApiResponse();
         }
 
         public async Task<ApiResponse> GetVillasPartialAsync()
         {
-            ApiResponse result = new ApiResponse();
-
             var villas = await _unitOfWork.Villas.GetAllAsync();
 
             if (!villas.Any())
             {
-                result.StatusCode = HttpStatusCode.NotAcceptable;
-                return result;
+                _response.StatusCode = HttpStatusCode.NotFound;
+                _response.ErrorMessage.Add("No villas were found!");
+                return _response;
             }
 
             var villaPartialDto = _mapper.Map<IEnumerable<VillaPartialDto>>(villas);
 
-            result.Result = villaPartialDto;
-            result.StatusCode = HttpStatusCode.OK;
+            _response.Result = villaPartialDto;
+            _response.StatusCode = HttpStatusCode.OK;
 
-            return result;
+            return _response;
         }
 
         public async Task<ApiResponse> GetVillasAsync()
         {
-            ApiResponse response = new ApiResponse();
-
             ISpecification<Villa> specification = new VillaWithDetailsAndStatusSpecification();
 
             var villas = await _unitOfWork.Villas.Find(specification);
 
-            if (!villas.Any(x => specification.IsSatisfied(x)))
+            if (!villas.Any())
             {
-                //TODO: Make new exception for these situations
-                throw new Exception("The received entities do not match the predicate");
+                _response.StatusCode = HttpStatusCode.NotFound;
+                _response.ErrorMessage.Add("No Villas were found");
             }
-
+            
             var villasDto = _mapper.Map<IEnumerable<VillaDto>>(villas);
 
-            response.Result = villasDto;
-            response.StatusCode = HttpStatusCode.OK;
-            return response;
+            _response.Result = villasDto;
+            _response.StatusCode = HttpStatusCode.OK;
+            return _response;
         }
 
         public async Task<ApiResponse> GetVillaByIdAsync(Guid id)
         {
-            var response = new ApiResponse();
-
-            if (id == Guid.Empty)
+            try
             {
-                response.StatusCode = HttpStatusCode.BadRequest;
-                return response;
+                if (id == Guid.Empty)
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    return _response;
+                }
+
+                var specification = new VillaWithDetailsAndStatusSpecification(id);
+                var villas = await _unitOfWork.Villas.Find(specification);
+                var villa = villas.SingleOrDefault();
+
+                if (villa == null)
+                {
+                    _response.StatusCode = HttpStatusCode.NotFound;
+                    return _response;
+                }
+
+                _response.Result = _mapper.Map<VillaDto>(villa);
+                _response.StatusCode = HttpStatusCode.OK;
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessage = new List<string>{ex.ToString()};
+                return _response;
             }
 
-            var specification = new VillaWithDetailsAndStatusSpecification(id);
-            var villas = await _unitOfWork.Villas.Find(specification);
-            var villa = villas.SingleOrDefault();
-
-            if (villa == null)
-            {
-                response.StatusCode = HttpStatusCode.NotFound;
-                return response;
-            }
-
-            response.Result = _mapper.Map<VillaDto>(villa);
-            response.StatusCode = HttpStatusCode.OK;
-
-            return response;
+            return _response;
         }
 
         public async Task<ApiResponse> CreateVillaAsync(VillaCreateDto villaDto)
         {
-            var response = new ApiResponse();
-
-            if (villaDto.IsNullOrEmpty())
-            {
-                response.StatusCode = HttpStatusCode.BadRequest;
-                response.ErrorMessage.Add("Villa is null or empty!");
-                return response;
-            }
-
-            var villaSpecification = new IsVillaExist(villaDto.Name, villaDto.VillaNumber);
-
-            var isExist = await _unitOfWork.Villas.FindSingle(villaSpecification);
-            
-            if (isExist != null)
-            {
-                response.StatusCode = HttpStatusCode.BadRequest;
-                response.ErrorMessage.Add("Villa already exists!");
-                return response;
-            }
-
-            var villa = _mapper.Map<Villa>(villaDto);
-
-            var villaStatusSpecification = new GetVillaStatusByName(StatusesSD.Available);
-
-            var status = await _unitOfWork.VillaStatus.FindSingle(villaStatusSpecification);
-
-            if (status == null)
-            {
-                response.IsSuccess = false;
-                response.StatusCode = HttpStatusCode.InternalServerError;
-                response.ErrorMessage.Add("Status Available does not exist!");
-                return response;
-            }
-
-            villa.Status = status;
-            villa.StatusId = status.Id;
-
             try
             {
+                if (villaDto.IsNullOrEmpty())
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.ErrorMessage.Add("Villa is null or empty!");
+                    return _response;
+                }
+
+                var villaSpecification = new FindVillaSpecification(villaDto.Name, villaDto.VillaNumber);
+
+                var isExist = await _unitOfWork.Villas.FindSingle(villaSpecification);
+
+                if (isExist != null)
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.ErrorMessage.Add("Villa already exists!");
+                    return _response;
+                }
+
+                var villa = _mapper.Map<Villa>(villaDto);
+
+                var villaStatusSpecification = new FindVillaStatusSpecification(StatusesSD.Available);
+
+                var status = await _unitOfWork.VillaStatus.FindSingle(villaStatusSpecification);
+
+                if (status == null)
+                {
+                    _response.IsSuccess = false;
+                    _response.StatusCode = HttpStatusCode.InternalServerError;
+                    _response.ErrorMessage.Add("Status Available does not exist!");
+                    return _response;
+                }
+
+                villa.Status = status;
+                villa.StatusId = status.Id;
+
+
                 await _unitOfWork.Villas.CreateAsync(villa);
                 await _unitOfWork.SaveChangesAsync();
+
+
+                _response.Result = _mapper.Map<VillaDto>(villa);
+                _response.StatusCode = HttpStatusCode.OK;
+
             }
             catch (Exception ex)
             {
-                response.IsSuccess = false;
-                response.StatusCode = HttpStatusCode.InternalServerError;
-                response.ErrorMessage.Add(ex.Message);
-                return response;
-            }
+                _response.IsSuccess = false;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessage = new List<string> { ex.ToString() };
+                return _response;
+            } 
 
-            response.Result = _mapper.Map<VillaDto>(villa);
-            response.StatusCode = HttpStatusCode.OK;
-
-            return response;
+            return _response;
         }
 
         public async Task<ApiResponse> UpdateVillaAsync(VillaUpdateDto updateDto)
         {
-            var response = new ApiResponse();
-
-            if (updateDto.IsNullOrEmpty())
-            {
-                response.StatusCode = HttpStatusCode.BadRequest;
-                response.ErrorMessage.Add("Villa is null or empty!");
-                return response;
-            }
-
-            var villaSpecification = new IsVillaExist(updateDto.Id, true);
-
-            var isExist = await _unitOfWork.Villas.FindSingle(villaSpecification);
-
-            if (isExist == null)
-            {
-                response.StatusCode = HttpStatusCode.NotFound;
-                response.ErrorMessage.Add("Villa does not exist!");
-                return response;
-            }
-
-            var villaStatusSpecification = new GetVillaStatusByName(updateDto.Status);
-
-            var status = await _unitOfWork.VillaStatus.FindSingle(villaStatusSpecification);
-
-            if (status == null)
-            {
-                response.StatusCode = HttpStatusCode.NotFound;
-                response.ErrorMessage.Add($"Status {updateDto.Status} does not exist!");
-                return response;
-            }
-
-            var villa = _mapper.Map<Villa>(updateDto);
-
-            villa.StatusId = status.Id;
-            villa.Status = status;
-
             try
             {
+                if (updateDto.IsNullOrEmpty())
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.ErrorMessage.Add("Villa is null or empty!");
+                    return _response;
+                }
+
+                var villaSpecification = new FindVillaSpecification(updateDto.Id, true);
+
+                var isExist = await _unitOfWork.Villas.FindSingle(villaSpecification);
+
+                if (isExist == null)
+                {
+                    _response.StatusCode = HttpStatusCode.NotFound;
+                    _response.ErrorMessage.Add("Villa does not exist!");
+                    return _response;
+                }
+
+                var villaStatusSpecification = new FindVillaStatusSpecification(updateDto.Status);
+
+                var status = await _unitOfWork.VillaStatus.FindSingle(villaStatusSpecification);
+
+                if (status == null)
+                {
+                    _response.StatusCode = HttpStatusCode.NotFound;
+                    _response.ErrorMessage.Add($"Status {updateDto.Status} does not exist!");
+                    return _response;
+                }
+
+                var villa = _mapper.Map<Villa>(updateDto);
+
+                villa.StatusId = status.Id;
+                villa.Status = status;
+
+
                 _unitOfWork.Villas.Update(villa);
                 await _unitOfWork.SaveChangesAsync();
+                
+
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = _mapper.Map<VillaDto>(villa);
+
             }
             catch (Exception ex)
             {
-                response.StatusCode = HttpStatusCode.InternalServerError;
-                response.IsSuccess = false;
-                response.ErrorMessage.Add(ex.Message);
-                return response;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.IsSuccess = false;
+                _response.ErrorMessage = new List<string>{ex.ToString()};
+                return _response;
+            }
+        
+            return _response;
+        }
+
+        public async Task<ApiResponse> DeleteVillaAsync(Guid id)
+        {
+            try
+            {
+                if (id == Guid.Empty)
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.ErrorMessage.Add("Id field is empty!");
+                    return _response;
+                }
+
+                var villaSpecification = new VillaWithDetailsAndStatusSpecification(id);
+
+                var villa = await _unitOfWork.Villas.FindSingle(villaSpecification);
+
+                if (villa == null)
+                {
+                    _response.StatusCode = HttpStatusCode.NotFound;
+                    _response.ErrorMessage.Add($"Villa with id: ({id.ToString()} was ton found)");
+                    return _response;
+                }
+                
+                await _unitOfWork.BeginTransactionAsync();
+
+                _unitOfWork.Villas.Delete(villa);
+                await _unitOfWork.SaveChangesAsync();
+
+                _unitOfWork.VillaDetails.Delete(villa.VillaDetails);
+                await _unitOfWork.SaveChangesAsync();
+
+                await _unitOfWork.CommitTransactionAsync();
+
+                var villaDto = _mapper.Map<VillaDto>(villa);
+
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = villaDto;
+
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessage = new List<string> { ex.ToString() };
+                await _unitOfWork.RollbackTransactionAsync();
             }
 
-            response.StatusCode = HttpStatusCode.OK;
-            response.Result = _mapper.Map<VillaDto>(villa);
-
-            return response;
+            return _response;
         }
     }
 }

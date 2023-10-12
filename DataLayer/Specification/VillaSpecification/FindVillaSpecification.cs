@@ -8,13 +8,13 @@ using DataLayer.Specification.Infrastructure;
 
 namespace DataLayer.Specification.VillaSpecification
 {
-    public class IsVillaExist : BaseSpecification<Villa>
+    public class FindVillaSpecification : BaseSpecification<Villa>
     {
-        public IsVillaExist(string name, int villaNumber) : base(v => v.Name == name || v.VillaNumber == villaNumber)
+        public FindVillaSpecification(string name, int villaNumber) : base(v => v.Name == name || v.VillaNumber == villaNumber)
         {
 
         }
-        public IsVillaExist(Guid id, bool asNoTracking = false) : base(v => v.Id == id)
+        public FindVillaSpecification(Guid id, bool asNoTracking = false) : base(v => v.Id == id)
         {
             AsNoTracking = asNoTracking;
         }
