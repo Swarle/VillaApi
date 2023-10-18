@@ -1,8 +1,10 @@
 using System.Collections.Concurrent;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using BusinessLogicLayer;
 using BusinessLogicLayer.Infastructure;
+using BusinessLogicLayer.Infrastructure;
 using BusinessLogicLayer.Services;
 using BusinessLogicLayer.Services.Interfaces;
 using DataLayer.Context;
@@ -14,6 +16,7 @@ using DataLayer.UnitOfWork.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Interfaces;
@@ -45,7 +48,25 @@ namespace PLL
 
             builder.Host.UseSerilog(logger);
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                .ConfigureApiBehaviorOptions(options =>
+                {
+                    options.InvalidModelStateResponseFactory = context =>
+                    {
+                        var errors = context.ModelState
+                            .SelectMany(m => m.Value.Errors)
+                            .Select(m => m.ErrorMessage)
+                            .ToList();
+
+                        var response = new ApiResponse
+                        {
+                            StatusCode = HttpStatusCode.BadRequest,
+                            ErrorMessage = errors
+                        };
+
+                        return new BadRequestObjectResult(response);
+                    };
+                });
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

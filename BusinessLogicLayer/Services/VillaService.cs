@@ -36,39 +36,58 @@ namespace BusinessLogicLayer.Services
 
         public async Task<ApiResponse> GetVillasPartialAsync()
         {
-            var villas = await _unitOfWork.Villas.GetAllAsync();
-
-            if (!villas.Any())
+            try
             {
-                _response.StatusCode = HttpStatusCode.NotFound;
-                _response.ErrorMessage.Add("No villas were found!");
-                return _response;
+                var villas = await _unitOfWork.Villas.GetAllAsync();
+
+                if (!villas.Any())
+                {
+                    _response.StatusCode = HttpStatusCode.NotFound;
+                    _response.ErrorMessage.Add("No Villas were found!");
+                    return _response;
+                }
+
+                var villaPartialDto = _mapper.Map<IEnumerable<VillaPartialDto>>(villas);
+
+                _response.Result = villaPartialDto;
+                _response.StatusCode = HttpStatusCode.OK;
             }
-
-            var villaPartialDto = _mapper.Map<IEnumerable<VillaPartialDto>>(villas);
-
-            _response.Result = villaPartialDto;
-            _response.StatusCode = HttpStatusCode.OK;
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.IsSuccess = false;
+                _response.ErrorMessage = new List<string> { ex.ToString() };
+            }
 
             return _response;
         }
 
         public async Task<ApiResponse> GetVillasAsync()
         {
-            ISpecification<Villa> specification = new VillaWithDetailsAndStatusSpecification();
-
-            var villas = await _unitOfWork.Villas.Find(specification);
-
-            if (!villas.Any())
+            try
             {
-                _response.StatusCode = HttpStatusCode.NotFound;
-                _response.ErrorMessage.Add("No Villas were found");
-            }
-            
-            var villasDto = _mapper.Map<IEnumerable<VillaDto>>(villas);
+                ISpecification<Villa> specification = new VillaWithDetailsAndStatusSpecification();
 
-            _response.Result = villasDto;
-            _response.StatusCode = HttpStatusCode.OK;
+                var villas = await _unitOfWork.Villas.Find(specification);
+
+                if (!villas.Any())
+                {
+                    _response.StatusCode = HttpStatusCode.NotFound;
+                    _response.ErrorMessage.Add("No Villas were found!");
+                    return _response;
+                }
+
+                var villasDto = _mapper.Map<IEnumerable<VillaDto>>(villas);
+
+                _response.Result = villasDto;
+                _response.StatusCode = HttpStatusCode.OK;
+            }
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.IsSuccess = false;
+                _response.ErrorMessage = new List<string> { ex.ToString() };
+            }
             return _response;
         }
 
@@ -76,19 +95,20 @@ namespace BusinessLogicLayer.Services
         {
             try
             {
-                if (id == Guid.Empty)
+                if (id == Guid.Empty )
                 {
                     _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.ErrorMessage.Add("Id is Guid Empty!");
                     return _response;
                 }
 
                 var specification = new VillaWithDetailsAndStatusSpecification(id);
-                var villas = await _unitOfWork.Villas.Find(specification);
-                var villa = villas.SingleOrDefault();
+                var villa = await _unitOfWork.Villas.FindSingle(specification);
 
                 if (villa == null)
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
+                    _response.ErrorMessage.Add("Villa with this id not exist!");
                     return _response;
                 }
 
@@ -100,24 +120,16 @@ namespace BusinessLogicLayer.Services
                 _response.IsSuccess = false;
                 _response.StatusCode = HttpStatusCode.InternalServerError;
                 _response.ErrorMessage = new List<string>{ex.ToString()};
-                return _response;
             }
 
             return _response;
         }
 
-        public async Task<ApiResponse> CreateVillaAsync(VillaCreateDto villaDto)
+        public async Task<ApiResponse> CreateVillaAsync(VillaCreateDto villaCreateDto)
         {
             try
             {
-                if (villaDto.IsNullOrEmpty())
-                {
-                    _response.StatusCode = HttpStatusCode.BadRequest;
-                    _response.ErrorMessage.Add("Villa is null or empty!");
-                    return _response;
-                }
-
-                var villaSpecification = new FindVillaSpecification(villaDto.Name, villaDto.VillaNumber);
+                var villaSpecification = new FindVillaSpecification(villaCreateDto.Name, villaCreateDto.VillaNumber);
 
                 var isExist = await _unitOfWork.Villas.FindSingle(villaSpecification);
 
@@ -128,7 +140,7 @@ namespace BusinessLogicLayer.Services
                     return _response;
                 }
 
-                var villa = _mapper.Map<Villa>(villaDto);
+                var villa = _mapper.Map<Villa>(villaCreateDto);
 
                 var villaStatusSpecification = new FindVillaStatusSpecification(StatusesSD.Available);
 
@@ -138,7 +150,7 @@ namespace BusinessLogicLayer.Services
                 {
                     _response.IsSuccess = false;
                     _response.StatusCode = HttpStatusCode.InternalServerError;
-                    _response.ErrorMessage.Add("Status Available does not exist!");
+                    _response.ErrorMessage.Add($"Status {StatusesSD.Available} does not exist!");
                     return _response;
                 }
 
@@ -159,7 +171,6 @@ namespace BusinessLogicLayer.Services
                 _response.IsSuccess = false;
                 _response.StatusCode = HttpStatusCode.InternalServerError;
                 _response.ErrorMessage = new List<string> { ex.ToString() };
-                return _response;
             } 
 
             return _response;
@@ -169,13 +180,6 @@ namespace BusinessLogicLayer.Services
         {
             try
             {
-                if (updateDto.IsNullOrEmpty())
-                {
-                    _response.StatusCode = HttpStatusCode.BadRequest;
-                    _response.ErrorMessage.Add("Villa is null or empty!");
-                    return _response;
-                }
-
                 var villaSpecification = new FindVillaSpecification(updateDto.Id, true);
 
                 var isExist = await _unitOfWork.Villas.FindSingle(villaSpecification);
@@ -210,14 +214,12 @@ namespace BusinessLogicLayer.Services
 
                 _response.StatusCode = HttpStatusCode.OK;
                 _response.Result = _mapper.Map<VillaDto>(villa);
-
             }
             catch (Exception ex)
             {
                 _response.StatusCode = HttpStatusCode.InternalServerError;
                 _response.IsSuccess = false;
                 _response.ErrorMessage = new List<string>{ex.ToString()};
-                return _response;
             }
         
             return _response;
@@ -241,7 +243,7 @@ namespace BusinessLogicLayer.Services
                 if (villa == null)
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
-                    _response.ErrorMessage.Add($"Villa with id: ({id.ToString()} was ton found)");
+                    _response.ErrorMessage.Add($"Villa with id: ({id.ToString()} was not found)");
                     return _response;
                 }
                 

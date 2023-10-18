@@ -28,11 +28,5 @@ namespace BusinessLogicLayer.Dto
         public int? Occupancy { get; set; }
         [Required]
         public decimal Price { get; set; }
-
-        public bool IsNullOrEmpty()
-        {
-            return Name.IsNullOrEmpty() || Describe.IsNullOrEmpty() || ImageUrl.IsNullOrEmpty() ||
-                   VillaNumber <= 0 || Rate < 0 || Sqmt <= 0 || Price <= 0;
-        }
     }
 }

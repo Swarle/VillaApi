@@ -34,12 +34,5 @@ namespace BusinessLogicLayer.Dto
         [Required]
         [MaxLength(20)]
         public string Status { get; set; }
-
-        public bool IsNullOrEmpty()
-        {
-            return Id == Guid.Empty || VillaDetailsId == Guid.Empty ||
-                Name.IsNullOrEmpty() || Describe.IsNullOrEmpty() || ImageUrl.IsNullOrEmpty() || Status.IsNullOrEmpty() ||
-                   VillaNumber <= 0 || Rate < 0 || Sqmt <= 0 || Price <= 0;
-        }
     }
 }

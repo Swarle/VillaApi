@@ -13,7 +13,7 @@ namespace BusinessLogicLayer.Services.Interfaces
         Task<ApiResponse> GetVillasPartialAsync();
         Task<ApiResponse> GetVillasAsync();
         Task<ApiResponse> GetVillaByIdAsync(Guid id);
-        Task<ApiResponse> CreateVillaAsync(VillaCreateDto villaDto);
+        Task<ApiResponse> CreateVillaAsync(VillaCreateDto villaCreateDto);
         Task<ApiResponse> UpdateVillaAsync(VillaUpdateDto updateDto);
         Task<ApiResponse> DeleteVillaAsync(Guid id);
     }
