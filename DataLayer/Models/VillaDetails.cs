@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DataLayer.Models;
 
 [Table("villa_details")]
+[Index("VillaId", Name = "IX_villa_details", IsUnique = true)]
 public partial class VillaDetails
 {
     [Key]
@@ -30,6 +31,10 @@ public partial class VillaDetails
     [Column("updated_date")]
     public DateTime UpdatedDate { get; set; }
 
+    [Column("villa_id")]
+    public Guid VillaId { get; set; }
+
+    [ForeignKey("VillaId")]
     [InverseProperty("VillaDetails")]
-    public virtual Villa? Villa { get; set; }
+    public virtual Villa Villa { get; set; }
 }

@@ -73,11 +73,7 @@ public partial class ApplicationContext : DbContext
             entity.HasOne(d => d.Status).WithMany(p => p.Villa)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_villa_villa_status");
-
-            entity.HasOne(d => d.VillaDetails).WithOne(p => p.Villa)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_villa_villa_details");
-
+            
             entity.HasMany(d => d.Order).WithMany(p => p.Villa)
                 .UsingEntity<Dictionary<string, object>>(
                     "OccupiedVilla",
@@ -101,6 +97,11 @@ public partial class ApplicationContext : DbContext
         modelBuilder.Entity<VillaDetails>(entity =>
         {
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+
+
+            entity.HasOne(d => d.Villa).WithOne(p => p.VillaDetails)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_villa_details_villa");
         });
 
         modelBuilder.Entity<VillaStatus>(entity =>

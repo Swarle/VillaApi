@@ -15,11 +15,9 @@ namespace BusinessLogicLayer.Dto
         public string Describe { get; set; } = null!;
         public string ImageUrl { get; set; } = null!;
         public int VillaNumber { get; set; }
-        public Guid VillaDetailsId { get; set; }
         public double Rate { get; set; }
         public double Sqmt { get; set; }
         public int? Occupancy { get; set; }
-        public Guid VillaStatusId { get; set; }
         public string VillaStatus { get; set; } = null!;
         public decimal Price { get; set; }
     }

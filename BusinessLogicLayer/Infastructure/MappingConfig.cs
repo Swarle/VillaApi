@@ -22,12 +22,8 @@ namespace BusinessLogicLayer.Infastructure
             CreateMap<Villa, VillaPartialDto>();
 
             CreateMap<Villa, VillaDto>()
-                .ForMember(dest => dest.VillaDetailsId, opt => 
-                    opt.MapFrom(src => src.VillaDetails.Id))
                 .ForMember(dest => dest.Price, opt =>
                     opt.MapFrom(src => src.Price))
-                .ForMember(dest => dest.VillaStatusId, opt =>
-                    opt.MapFrom(src => src.Status.Id))
                 .ForMember(dest => dest.Rate, opt =>
                     opt.MapFrom(src => src.VillaDetails.Rate))
                 .ForMember(dest => dest.Sqmt, opt =>
@@ -51,7 +47,7 @@ namespace BusinessLogicLayer.Infastructure
                 .ForMember(dest => dest.VillaDetails, opt =>
                     opt.MapFrom((dto, villa) => new VillaDetails()
                     {
-                        Id = dto.VillaDetailsId,
+                        //Id = dto.VillaDetailsId,
                         Rate = dto.Rate,
                         Sqmt = dto.Sqmt,
                         Occupancy = dto.Occupancy,

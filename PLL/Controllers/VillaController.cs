@@ -67,7 +67,7 @@ namespace PLL.Controllers
         }
 
         [HttpDelete("delete-villa/{id:guid}")]
-        //[Authorize(Policy = "AdminPolicy")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<ActionResult<ApiResponse>> DeleteVillaAsync(Guid id)
         {
             var response = await _villaService.DeleteVillaAsync(id);

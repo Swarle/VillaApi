@@ -19,7 +19,7 @@ namespace DataLayer.Repository
         public override async Task CreateAsync(Villa entity)
         {
             entity.VillaDetails.CreatedDate = DateTime.Now;
-            entity.VillaDetails.UpdatedDate = entity.VillaDetails.CreatedDate;
+            entity.VillaDetails.UpdatedDate = DateTime.Now;
 
             await _context.AddAsync(entity);
         }

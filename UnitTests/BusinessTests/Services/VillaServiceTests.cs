@@ -64,7 +64,6 @@ namespace UnitTests.BusinessTests.Services
                     ImageUrl = "image",
                     Price = 2000,
                     StatusId = Guid.NewGuid(),
-                    VillaDetailsId = Guid.NewGuid()
                 },
                 new Villa
                 {
@@ -73,7 +72,6 @@ namespace UnitTests.BusinessTests.Services
                     ImageUrl = "image 2",
                     Price = 2001,
                     StatusId = Guid.NewGuid(),
-                    VillaDetailsId = Guid.NewGuid()
                 }
             };
             
@@ -141,13 +139,12 @@ namespace UnitTests.BusinessTests.Services
             {
                 new Villa
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.Parse("636C067C-3D13-4CB1-A7C6-8C570F6577C6"),
                     Describe = "Test data 1",
                     ImageUrl = "Image 1",
                     Name = "Name 1",
                     Price = 1,
                     StatusId = Guid.Parse("631CC936-E6EF-4D14-8642-553C750F2788"),
-                    VillaDetailsId = Guid.Parse("90C68D3B-7F05-4F7F-B3D3-AD27EEC89802"),
                     VillaDetails = new VillaDetails
                     {
                         Id = Guid.Parse("90C68D3B-7F05-4F7F-B3D3-AD27EEC89802"),
@@ -156,6 +153,7 @@ namespace UnitTests.BusinessTests.Services
                         Occupancy = 1,
                         Rate = 1,
                         Sqmt = 1,
+                        VillaId = Guid.Parse("636C067C-3D13-4CB1-A7C6-8C570F6577C6"),
                     },
                     Status = new VillaStatus
                     {
@@ -165,13 +163,12 @@ namespace UnitTests.BusinessTests.Services
                 },
                 new Villa
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.Parse("D87EFFEB-FE6A-4EC8-9954-D1DEEBC29D7E"),
                     Describe = "Test data 2",
                     ImageUrl = "Image 2",
                     Name = "Name 2",
                     Price = 2,
                     StatusId = Guid.Parse("1B8C6DF0-DD9C-4CB6-AC63-E10B345CB077"),
-                    VillaDetailsId = Guid.Parse("21AB23FF-BB9D-4BEB-BE6D-A5969A6D190C"),
                     VillaDetails = new VillaDetails
                     {
                         Id = Guid.Parse("21AB23FF-BB9D-4BEB-BE6D-A5969A6D190C"),
@@ -180,6 +177,7 @@ namespace UnitTests.BusinessTests.Services
                         Occupancy = 2,
                         Rate = 2,
                         Sqmt = 2,
+                        VillaId = Guid.Parse("D87EFFEB-FE6A-4EC8-9954-D1DEEBC29D7E")
                     },
                     Status = new VillaStatus
                     {
@@ -357,7 +355,6 @@ namespace UnitTests.BusinessTests.Services
             var expectedResult = _mapper.Map<VillaDto>(_mapper.Map<Villa>(villaCreateDto));
 
             expectedResult.VillaStatus = villaStatus.Status;
-            expectedResult.VillaStatusId = villaStatus.Id;
 
             _villaRepository.Setup(e => e.FindSingle(It.IsAny<ISpecification<Villa>>()))
                 .ReturnsAsync(null as Villa);
@@ -497,7 +494,7 @@ namespace UnitTests.BusinessTests.Services
         [Test]
         public async Task UpdateVillaAsync_WhenWasUpdated_ReturnsApiResponseWithStatusCode200()
         {
-            //Arange
+            //Arrange
             var updateDto = new VillaUpdateDto
             {
                 Id = Guid.NewGuid(),
@@ -509,7 +506,6 @@ namespace UnitTests.BusinessTests.Services
                 Rate = 1,
                 Sqmt = 1,
                 Status = StatusesSD.Available,
-                VillaDetailsId = Guid.NewGuid(),
                 VillaNumber = 1
             };
 
@@ -557,7 +553,6 @@ namespace UnitTests.BusinessTests.Services
                 Rate = 1,
                 Sqmt = 1,
                 Status = StatusesSD.Available,
-                VillaDetailsId = Guid.NewGuid(),
                 VillaNumber = 1
             };
             
@@ -588,7 +583,6 @@ namespace UnitTests.BusinessTests.Services
                 Rate = 1,
                 Sqmt = 1,
                 Status = StatusesSD.Available,
-                VillaDetailsId = Guid.NewGuid(),
                 VillaNumber = 1
             };
 
@@ -657,9 +651,9 @@ namespace UnitTests.BusinessTests.Services
                     Occupancy = 1,
                     Rate = 1,
                     Sqmt = 1,
-                    UpdatedDate = DateTime.Now
+                    UpdatedDate = DateTime.Now,
+                    VillaId = id,
                 },
-                VillaDetailsId = villaDetailsId
             };
 
             villa.VillaDetails.Villa = villa;

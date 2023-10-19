@@ -16,13 +16,13 @@ namespace UnitTests.BusinessTests.EqualityComparers
             if(ReferenceEquals(y, null)) return false;
             if(x.GetType() != y.GetType()) return false;
             return x.Id == y.Id && x.Name == y.Name && x.Describe == y.Describe && x.ImageUrl == y.ImageUrl && x.VillaNumber == y.VillaNumber && 
-                   x.VillaDetailsId == y.VillaDetailsId && x.Rate == y.Rate && x.Sqmt == y.Sqmt && x.Occupancy == y.Occupancy 
-                   && x.VillaStatusId == y.VillaStatusId && x.VillaStatus == y.VillaStatus && x.Price == y.Price;
+                    x.Rate == y.Rate && x.Sqmt == y.Sqmt && x.Occupancy == y.Occupancy &&
+                   x.VillaStatus == y.VillaStatus && x.Price == y.Price;
         }
 
         public int GetHashCode(VillaDto obj)
         {
-            return HashCode.Combine(obj.Id,obj.VillaDetailsId,obj.VillaStatusId,obj.Name,obj.Price,obj.Describe,obj.ImageUrl);
+            return HashCode.Combine(obj.Id,obj.Name,obj.Price,obj.Describe,obj.ImageUrl);
         }
     }
 }

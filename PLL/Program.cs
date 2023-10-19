@@ -161,6 +161,11 @@ namespace PLL
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+                app.MapControllers().AllowAnonymous();
+            }
+            else
+            {
+                app.MapControllers();
             }
 
             app.UseHttpsRedirection();
@@ -168,7 +173,7 @@ namespace PLL
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.MapControllers();
+           
             
             await app.RunAsync();
         }

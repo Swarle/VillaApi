@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 namespace DataLayer.Models;
 
 [Table("villa")]
-[Index("VillaDetailsId", Name = "IX_villa", IsUnique = true)]
 public partial class Villa
 {
     [Key]
@@ -26,10 +25,7 @@ public partial class Villa
 
     [Column("image_url")]
     public string ImageUrl { get; set; } = null!;
-
-    [Column("villa_details_id")]
-    public Guid VillaDetailsId { get; set; }
-
+    
     [Column("villa_number")]
     public int VillaNumber { get; set; }
 
@@ -43,7 +39,6 @@ public partial class Villa
     [InverseProperty("Villa")]
     public virtual VillaStatus Status { get; set; } = null!;
 
-    [ForeignKey("VillaDetailsId")]
     [InverseProperty("Villa")]
     public virtual VillaDetails VillaDetails { get; set; } = null!;
 

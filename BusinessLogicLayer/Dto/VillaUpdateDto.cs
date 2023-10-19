@@ -23,8 +23,6 @@ namespace BusinessLogicLayer.Dto
         [Required]
         public int VillaNumber { get; set; }
         [Required]
-        public Guid VillaDetailsId { get; set; }
-        [Required]
         public double Rate { get; set; }
         [Required]
         public double Sqmt { get; set; }

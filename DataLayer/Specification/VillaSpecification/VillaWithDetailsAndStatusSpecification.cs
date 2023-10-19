@@ -23,7 +23,7 @@ namespace DataLayer.Specification.VillaSpecification
 
         public override bool IsSatisfied(Villa obj)
         {
-            return obj.VillaDetails != null && obj.Status != null && obj.VillaDetailsId != Guid.Empty && obj.StatusId != Guid.Empty;
+            return obj.VillaDetails != null && obj.Status != null && obj.StatusId != Guid.Empty;
         }
 
         private void Includes()

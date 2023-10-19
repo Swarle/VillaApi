@@ -180,11 +180,11 @@ namespace BusinessLogicLayer.Services
         {
             try
             {
-                var villaSpecification = new FindVillaSpecification(updateDto.Id, true);
+                var villaSpecification = new VillaWithDetailsAndStatusSpecification(updateDto.Id, true);
 
-                var isExist = await _unitOfWork.Villas.FindSingle(villaSpecification);
+                var villaFromDb = await _unitOfWork.Villas.FindSingle(villaSpecification);
 
-                if (isExist == null)
+                if (villaFromDb == null)
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
                     _response.ErrorMessage.Add("Villa does not exist!");
@@ -206,12 +206,13 @@ namespace BusinessLogicLayer.Services
 
                 villa.StatusId = status.Id;
                 villa.Status = status;
-
+                villa.VillaDetails.Id = villaFromDb.VillaDetails.Id;
+                villa.VillaDetails.Villa = villa;
+                villa.VillaDetails.CreatedDate = villaFromDb.VillaDetails.CreatedDate;
 
                 _unitOfWork.Villas.Update(villa);
                 await _unitOfWork.SaveChangesAsync();
                 
-
                 _response.StatusCode = HttpStatusCode.OK;
                 _response.Result = _mapper.Map<VillaDto>(villa);
             }
@@ -252,8 +253,8 @@ namespace BusinessLogicLayer.Services
                 _unitOfWork.Villas.Delete(villa);
                 await _unitOfWork.SaveChangesAsync();
 
-                _unitOfWork.VillaDetails.Delete(villa.VillaDetails);
-                await _unitOfWork.SaveChangesAsync();
+                //_unitOfWork.VillaDetails.Delete(villa.VillaDetails);
+                //await _unitOfWork.SaveChangesAsync();
 
                 await _unitOfWork.CommitTransactionAsync();
 
