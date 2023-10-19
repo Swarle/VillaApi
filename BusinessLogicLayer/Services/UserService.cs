@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using BusinessLogicLayer.Dto;
+using BusinessLogicLayer.Dto.Villa;
 using BusinessLogicLayer.Infrastructure;
 using BusinessLogicLayer.Services.Interfaces;
 using DataLayer.Models;

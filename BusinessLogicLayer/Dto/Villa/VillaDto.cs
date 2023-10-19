@@ -6,11 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BusinessLogicLayer.Dto
+namespace BusinessLogicLayer.Dto.Villa
 {
     public class VillaDto
     {
-        public Guid Id {get; set; }
+        public Guid Id { get; set; }
         public string Name { get; set; } = null!;
         public string Describe { get; set; } = null!;
         public string ImageUrl { get; set; } = null!;

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using BusinessLogicLayer.Dto;
+using BusinessLogicLayer.Dto.Villa;
 using DataLayer.Models;
 
 namespace BusinessLogicLayer.Infastructure
@@ -54,6 +55,8 @@ namespace BusinessLogicLayer.Infastructure
                         Villa = villa,
                     }))
                 .ForMember(dest => dest.Status, opt => opt.Ignore());
+
+            CreateMap<VillaStatusDto, VillaStatus>().ReverseMap();
 
             //CreateMap<VillaCreateDto, Villa>()
             //    .ForMember(dest => dest.VillaDetails, opt => opt.MapFrom(s => s));

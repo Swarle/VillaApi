@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using BusinessLogicLayer.Dto;
+using BusinessLogicLayer.Dto.Villa;
 using BusinessLogicLayer.Infrastructure;
 using BusinessLogicLayer.Services.Interfaces;
 using DataLayer.Context;

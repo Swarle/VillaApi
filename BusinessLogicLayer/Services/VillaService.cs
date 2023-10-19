@@ -7,7 +7,6 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using BusinessLogicLayer.Dto;
 using BusinessLogicLayer.Infrastructure;
 using BusinessLogicLayer.Services.Interfaces;
 using Utility;
@@ -18,6 +17,7 @@ using DataLayer.Specification.VillaStatusSpecification;
 using DataLayer.UnitOfWork.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using Azure;
+using BusinessLogicLayer.Dto.Villa;
 
 namespace BusinessLogicLayer.Services
 {
@@ -190,10 +190,8 @@ namespace BusinessLogicLayer.Services
                     _response.ErrorMessage.Add("Villa does not exist!");
                     return _response;
                 }
-
-                var villaStatusSpecification = new FindVillaStatusSpecification(updateDto.Status);
-
-                var status = await _unitOfWork.VillaStatus.FindSingle(villaStatusSpecification);
+                
+                var status = await _unitOfWork.VillaStatus.GetByIdAsync(updateDto.VillaStatusId);
 
                 if (status == null)
                 {
@@ -244,19 +242,12 @@ namespace BusinessLogicLayer.Services
                 if (villa == null)
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
-                    _response.ErrorMessage.Add($"Villa with id: ({id.ToString()} was not found)");
+                    _response.ErrorMessage.Add($"Villa with id:({id.ToString()}) was not found");
                     return _response;
                 }
-                
-                await _unitOfWork.BeginTransactionAsync();
 
                 _unitOfWork.Villas.Delete(villa);
                 await _unitOfWork.SaveChangesAsync();
-
-                //_unitOfWork.VillaDetails.Delete(villa.VillaDetails);
-                //await _unitOfWork.SaveChangesAsync();
-
-                await _unitOfWork.CommitTransactionAsync();
 
                 var villaDto = _mapper.Map<VillaDto>(villa);
 
@@ -272,6 +263,33 @@ namespace BusinessLogicLayer.Services
                 await _unitOfWork.RollbackTransactionAsync();
             }
 
+            return _response;
+        }
+
+        public async Task<ApiResponse> GetVillaStatusesAsync()
+        {
+            try
+            {
+                var villaStatuses = await _unitOfWork.VillaStatus.GetAllAsync();
+
+                if (!villaStatuses.Any())
+                {
+                    _response.StatusCode = HttpStatusCode.NotFound;
+                    _response.ErrorMessage.Add("Statuses not found!");
+                    return _response;
+                }
+
+                var statusDtoList = _mapper.Map<List<VillaStatusDto>>(villaStatuses);
+
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = statusDtoList;
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessage = new List<string> { ex.ToString() };
+            }
             return _response;
         }
     }

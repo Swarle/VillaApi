@@ -1,16 +1,17 @@
-﻿using System;
+﻿using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.IdentityModel.Tokens;
 
-namespace BusinessLogicLayer.Dto
+namespace BusinessLogicLayer.Dto.Villa
 {
-    public class VillaCreateDto
+    public class VillaUpdateDto
     {
+        [Required]
+        public Guid Id { get; set; }
         [Required]
         [MaxLength(50)]
         public string Name { get; set; } = null!;
@@ -28,5 +29,10 @@ namespace BusinessLogicLayer.Dto
         public int? Occupancy { get; set; }
         [Required]
         public decimal Price { get; set; }
+        [Required]
+        [MaxLength(20)]
+        public string Status { get; set; }
+        [Required]
+        public Guid VillaStatusId { get; set; }
     }
 }

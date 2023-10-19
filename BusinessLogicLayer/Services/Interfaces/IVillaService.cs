@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BusinessLogicLayer.Dto;
+using BusinessLogicLayer.Dto.Villa;
 using BusinessLogicLayer.Infrastructure;
 
 namespace BusinessLogicLayer.Services.Interfaces
@@ -16,5 +16,6 @@ namespace BusinessLogicLayer.Services.Interfaces
         Task<ApiResponse> CreateVillaAsync(VillaCreateDto villaCreateDto);
         Task<ApiResponse> UpdateVillaAsync(VillaUpdateDto updateDto);
         Task<ApiResponse> DeleteVillaAsync(Guid id);
+        Task<ApiResponse> GetVillaStatusesAsync();
     }
 }

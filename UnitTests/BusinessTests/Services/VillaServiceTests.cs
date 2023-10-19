@@ -5,7 +5,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using BusinessLogicLayer.Dto;
+using BusinessLogicLayer.Dto.Villa;
 using BusinessLogicLayer.Services;
 using BusinessLogicLayer.Services.Interfaces;
 using DataLayer.Models;
@@ -20,7 +20,7 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Moq;
 using UnitTests.BusinessTests.EqualityComparers;
 using Utility;
-using VillaDto = BusinessLogicLayer.Dto.VillaDto;
+using VillaDto = BusinessLogicLayer.Dto.Villa.VillaDto;
 
 namespace UnitTests.BusinessTests.Services
 {
@@ -495,6 +495,12 @@ namespace UnitTests.BusinessTests.Services
         public async Task UpdateVillaAsync_WhenWasUpdated_ReturnsApiResponseWithStatusCode200()
         {
             //Arrange
+            var villaStatus = new VillaStatus
+            {
+                Id = Guid.NewGuid(),
+                Status = StatusesSD.Available
+            };
+
             var updateDto = new VillaUpdateDto
             {
                 Id = Guid.NewGuid(),
@@ -506,15 +512,10 @@ namespace UnitTests.BusinessTests.Services
                 Rate = 1,
                 Sqmt = 1,
                 Status = StatusesSD.Available,
-                VillaNumber = 1
+                VillaNumber = 1,
+                VillaStatusId = villaStatus.Id
             };
-
-            var villaStatus = new VillaStatus
-            {
-                Id = Guid.NewGuid(),
-                Status = StatusesSD.Available
-            };
-
+            
             var villa = _mapper.Map<Villa>(updateDto);
             villa.Status = villaStatus;
             villa.StatusId = villaStatus.Id;
@@ -523,7 +524,7 @@ namespace UnitTests.BusinessTests.Services
 
             _villaRepository.Setup(e => e.FindSingle(It.IsAny<ISpecification<Villa>>()))
                 .ReturnsAsync(villa);
-            _villaStatusRepository.Setup(e => e.FindSingle(It.IsAny<ISpecification<VillaStatus>>()))
+            _villaStatusRepository.Setup(e => e.GetByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(villaStatus);
 
             //Act
@@ -731,6 +732,79 @@ namespace UnitTests.BusinessTests.Services
             action.Result.Should().BeNull();
             action.ErrorMessage.Should().NotBeEmpty();
 
+        }
+        #endregion
+
+        #region GetVillaStatusesAsync
+
+        [Test]
+        public async Task GetVillaStatusesAsync_WhenStatusesExist_ReturnApiResponseWithStatusCode200()
+        {
+            //Arrange
+            var source = new List<VillaStatus>
+            {
+                new VillaStatus
+                {
+                    Id = Guid.NewGuid(),
+                    Status = StatusesSD.Available,
+                },
+                new VillaStatus
+                {
+                    Id = Guid.NewGuid(),
+                    Status = StatusesSD.Booked,
+                }
+            };
+
+            var expectedResult = _mapper.Map<List<VillaStatusDto>>(source);
+
+            _villaStatusRepository.Setup(e => e.GetAllAsync()).ReturnsAsync(source);
+
+            //Act
+            var action = await _villaService.GetVillaStatusesAsync();
+
+            //Assert
+            action.StatusCode.Should().Be(HttpStatusCode.OK);
+            action.IsSuccess.Should().BeTrue();
+            action.ErrorMessage.Should().BeEmpty();
+            
+            var result = action.Result as List<VillaStatusDto>;
+            result.Should().BeEquivalentTo(expectedResult);
+        }
+
+        [Test]
+        public async Task GetVillaStatusesAsync_WhenStatusesNotFound_ReturnsApiResponseWithStatusCode404()
+        {
+            //Arrange
+            var source = new List<VillaStatus>();
+
+            _villaStatusRepository.Setup(e => e.GetAllAsync()).ReturnsAsync(source);
+
+            //Act
+            var action = await _villaService.GetVillaStatusesAsync();
+
+            //Assert
+            action.IsSuccess.Should().BeTrue();
+            action.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            action.Result.Should().BeNull();
+            action.ErrorMessage.Should().NotBeEmpty();
+        }
+
+        [Test]
+        public async Task GetVillaStatusesAsync_WhenThrowingException_ReturnsApiResponseWithStatusCode500()
+        {
+            //Arrange
+            var exception = new Exception("Server error");
+
+            _villaStatusRepository.Setup(e => e.GetAllAsync()).Throws(exception);
+
+            //Act
+            var action = await _villaService.GetVillaStatusesAsync();
+
+            //Assert
+            action.IsSuccess.Should().BeFalse();
+            action.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+            action.Result.Should().BeNull();
+            action.ErrorMessage.Should().NotBeEmpty();
         }
         #endregion
     }
