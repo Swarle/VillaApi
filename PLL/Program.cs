@@ -85,6 +85,7 @@ namespace PLL
             builder.Services.AddAutoMapper(typeof(MappingConfig));
 
             builder.Services.AddScoped<IVillaService,VillaService>();
+            builder.Services.AddScoped<IAuthService,AuthService>();
             builder.Services.AddScoped<IUserService,UserService>();
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

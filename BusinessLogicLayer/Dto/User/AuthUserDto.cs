@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BusinessLogicLayer.Dto.Villa
+namespace BusinessLogicLayer.Dto.User
 {
-    public class UserDto
+    public class AuthUserDto
     {
         public Guid Id { get; set; }
         public string Login { get; set; }

@@ -9,6 +9,5 @@ namespace BusinessLogicLayer.Infrastructure
         public object? Result { get; set; }
         public List<string> ErrorMessage { get; set; } = new List<string>();
 
-
     }
 }

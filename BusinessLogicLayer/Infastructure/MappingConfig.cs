@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using BusinessLogicLayer.Dto;
+using BusinessLogicLayer.Dto.Order;
+using BusinessLogicLayer.Dto.User;
 using BusinessLogicLayer.Dto.Villa;
 using DataLayer.Models;
 
@@ -68,10 +70,24 @@ namespace BusinessLogicLayer.Infastructure
             CreateMap<RegistrationDto, Users>()
                 .ForMember(dest => dest.Role, opt => opt.Ignore());
 
-            CreateMap<Users, UserDto>()
+            CreateMap<Users, AuthUserDto>()
                 .ForMember(dist => dist.Role, opt => 
                     opt.MapFrom(src => src.Role.RoleName));
 
+            CreateMap<Users, UserPartialDto>()
+                .ForMember(dest => dest.Role, opt =>
+                    opt.MapFrom(src => src.Role.RoleName))
+                .ForMember(dest => dest.OrdersCount, opt =>
+                    opt.MapFrom(src => src.Orders.Count));
+
+        }
+
+        private void OrderMapConfiguration()
+        {
+            //CreateMap<Orders,OrderPartialDto>()
+            //    .ForMember(dest => dest.Status, opt => 
+            //        opt.MapFrom(src => src.Status.Status))
+            //    .ForMember();
         }
     }   
 }

@@ -25,12 +25,19 @@ namespace PLL.Controllers
 
 
         [HttpGet("get-villa-partial")]
-        [Authorize]
         public async Task<ActionResult<ApiResponse>> GetVillasPartial()
         {
             var response = await _villaService.GetVillasPartialAsync();
 
             return StatusCode((int)response.StatusCode,response);
+        }
+
+        [HttpGet("get-villas-statuses")]
+        public async Task<ActionResult<ApiResponse>> GetVillaStatuses()
+        {
+            var response = await _villaService.GetVillaStatusesAsync();
+
+            return StatusCode((int)response.StatusCode, response);
         }
         
         [HttpGet("get-villas")]
@@ -74,7 +81,6 @@ namespace PLL.Controllers
 
             return StatusCode((int)response.StatusCode,response);
         }
-
 
 
     }

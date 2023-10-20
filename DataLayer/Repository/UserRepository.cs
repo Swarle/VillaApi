@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DataLayer.Context;
 using DataLayer.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataLayer.Repository
 {
@@ -20,7 +21,7 @@ namespace DataLayer.Repository
         public override async Task CreateAsync(Users entity)
         {
             entity.CreatedDate = DateTime.Now;
-
+            
             await _context.AddAsync(entity);
         }
     }
