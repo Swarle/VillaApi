@@ -18,6 +18,7 @@ namespace BusinessLogicLayer.Infastructure
         {
             VillaMapConfiguration();
             UserMapConfiguration();
+            OrderMapConfiguration();
         }
 
         private void VillaMapConfiguration()
@@ -71,7 +72,7 @@ namespace BusinessLogicLayer.Infastructure
                 .ForMember(dest => dest.Role, opt => opt.Ignore());
 
             CreateMap<Users, AuthUserDto>()
-                .ForMember(dist => dist.Role, opt => 
+                .ForMember(dest => dest.Role, opt => 
                     opt.MapFrom(src => src.Role.RoleName));
 
             CreateMap<Users, UserPartialDto>()
@@ -88,6 +89,15 @@ namespace BusinessLogicLayer.Infastructure
             //    .ForMember(dest => dest.Status, opt => 
             //        opt.MapFrom(src => src.Status.Status))
             //    .ForMember();
+
+            CreateMap<Orders, OrderDto>()
+                .ForMember(dest => dest.Status, opt =>
+                    opt.MapFrom(src => src.Status.Status))
+                .ForMember(dest => dest.User, opt => 
+                    opt.MapFrom(src => src.User))
+                .ForMember(dest => dest.Villas, opt =>
+                    opt.MapFrom(src => src.Villa));
+            
         }
     }   
 }

@@ -87,6 +87,7 @@ namespace PLL
             builder.Services.AddScoped<IVillaService,VillaService>();
             builder.Services.AddScoped<IAuthService,AuthService>();
             builder.Services.AddScoped<IUserService,UserService>();
+            builder.Services.AddScoped<IOrderService,OrderService>();
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             

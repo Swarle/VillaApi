@@ -98,7 +98,7 @@ namespace BusinessLogicLayer.Services
                 if (id == Guid.Empty )
                 {
                     _response.StatusCode = HttpStatusCode.BadRequest;
-                    _response.ErrorMessage.Add("Id is Guid Empty!");
+                    _response.ErrorMessage.Add("Id is empty!");
                     return _response;
                 }
 
