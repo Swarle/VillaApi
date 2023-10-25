@@ -26,6 +26,13 @@ namespace DataLayer.Specification.Infrastructure
                     current.Include(include));
             }
 
+            if (specification.IncludeString.Count > 0)
+            {
+                query = specification.IncludeString
+                    .Aggregate(query,
+                        (current, include) => current.Include(include));
+            }
+
             if (specification.Paging != null)
             {
                 query = query.Skip(specification.Paging.Skip)

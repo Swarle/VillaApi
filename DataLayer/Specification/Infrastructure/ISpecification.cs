@@ -11,6 +11,7 @@ namespace DataLayer.Specification.Infrastructure
     {
         public Expression<Func<TEntity, bool>> Expression { get; }
         public List<Expression<Func<TEntity, object>>> IncludeExpressions { get; set; }
+        public List<string> IncludeString { get; set; }
         public PagingSpecification Paging { get; set; }
         public bool AsNoTracking { get; set; }
 
