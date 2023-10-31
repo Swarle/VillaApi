@@ -8,14 +8,14 @@ using DataLayer.Specification.Infrastructure;
 
 namespace DataLayer.Specification.VillaSpecification
 {
-    public sealed class VillaWithDetailsAndStatusSpecification : BaseSpecification<Villa>
+    public sealed class FindVillaWithDetailsAndStatusSpecification : BaseSpecification<Villa>
     {
-        public VillaWithDetailsAndStatusSpecification()
+        public FindVillaWithDetailsAndStatusSpecification()
         {
             Includes();
         }
 
-        public VillaWithDetailsAndStatusSpecification(Guid id, bool asNoTracking = false) : base(x => x.Id == id)
+        public FindVillaWithDetailsAndStatusSpecification(Guid id, bool asNoTracking = false) : base(x => x.Id == id)
         {
             Includes();
             AsNoTracking = asNoTracking;

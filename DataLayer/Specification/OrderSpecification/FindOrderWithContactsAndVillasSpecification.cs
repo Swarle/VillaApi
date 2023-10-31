@@ -11,7 +11,16 @@ namespace DataLayer.Specification.OrderSpecification
 {
     public class FindOrderWithContactsAndVillasSpecification : BaseSpecification<Orders>
     {
+        public FindOrderWithContactsAndVillasSpecification()
+        {
+            Includes();
+        }
         public FindOrderWithContactsAndVillasSpecification(Guid id) : base(o => o.Id == id)
+        {
+            Includes();
+        }
+
+        void Includes()
         {
             AddInclude(e => e.Villa);
             AddInclude($"{nameof(Villa)}.{nameof(Villa.VillaDetails)}");

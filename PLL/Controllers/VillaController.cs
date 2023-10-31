@@ -25,7 +25,7 @@ namespace PLL.Controllers
 
 
         [HttpGet("get-villa-partial")]
-        public async Task<ActionResult<ApiResponse>> GetVillasPartial()
+        public async Task<ActionResult<ApiResponse>> GetVillasPartialAsync()
         {
             var response = await _villaService.GetVillasPartialAsync();
 
@@ -33,7 +33,7 @@ namespace PLL.Controllers
         }
 
         [HttpGet("get-villas-statuses")]
-        public async Task<ActionResult<ApiResponse>> GetVillaStatuses()
+        public async Task<ActionResult<ApiResponse>> GetVillaStatusesAsync()
         {
             var response = await _villaService.GetVillaStatusesAsync();
 
@@ -41,7 +41,7 @@ namespace PLL.Controllers
         }
         
         [HttpGet("get-villas")]
-        public async Task<ActionResult<ApiResponse>> GetVillas()
+        public async Task<ActionResult<ApiResponse>> GetVillasAsync()
         {
             var response = await _villaService.GetVillasAsync();
 
@@ -49,7 +49,7 @@ namespace PLL.Controllers
         }
 
         [HttpGet("get-villa/{id:Guid}")]
-        public async Task<ActionResult<ApiResponse>> GetVilla(Guid id)
+        public async Task<ActionResult<ApiResponse>> GetVillaAsync(Guid id)
         {
             var response = await _villaService.GetVillaByIdAsync(id);
 

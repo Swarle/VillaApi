@@ -85,19 +85,22 @@ namespace BusinessLogicLayer.Infastructure
 
         private void OrderMapConfiguration()
         {
-            //CreateMap<Orders,OrderPartialDto>()
-            //    .ForMember(dest => dest.Status, opt => 
-            //        opt.MapFrom(src => src.Status.Status))
-            //    .ForMember();
+            CreateMap<Orders, OrderPartialDto>()
+                .ForMember(dest => dest.Status, opt =>
+                    opt.MapFrom(src => src.Status.Status))
+                .ForMember(dest => dest.User, opt =>
+                    opt.MapFrom(src => src.User));
 
             CreateMap<Orders, OrderDto>()
                 .ForMember(dest => dest.Status, opt =>
                     opt.MapFrom(src => src.Status.Status))
                 .ForMember(dest => dest.User, opt => 
                     opt.MapFrom(src => src.User))
-                .ForMember(dest => dest.Villas, opt =>
+                .ForMember(dest => dest.Villa, opt =>
                     opt.MapFrom(src => src.Villa));
-            
+
+            CreateMap<OrderCreateDto, Orders>();
+
         }
     }   
 }

@@ -66,7 +66,7 @@ namespace BusinessLogicLayer.Services
         {
             try
             {
-                ISpecification<Villa> specification = new VillaWithDetailsAndStatusSpecification();
+                ISpecification<Villa> specification = new FindVillaWithDetailsAndStatusSpecification();
 
                 var villas = await _unitOfWork.Villas.Find(specification);
 
@@ -102,7 +102,7 @@ namespace BusinessLogicLayer.Services
                     return _response;
                 }
 
-                var specification = new VillaWithDetailsAndStatusSpecification(id);
+                var specification = new FindVillaWithDetailsAndStatusSpecification(id);
                 var villa = await _unitOfWork.Villas.FindSingle(specification);
 
                 if (villa == null)
@@ -142,7 +142,7 @@ namespace BusinessLogicLayer.Services
 
                 var villa = _mapper.Map<Villa>(villaCreateDto);
 
-                var villaStatusSpecification = new FindVillaStatusSpecification(StatusesSD.Available);
+                var villaStatusSpecification = new FindVillaStatusSpecification(VillaStatusSD.Available);
 
                 var status = await _unitOfWork.VillaStatus.FindSingle(villaStatusSpecification);
 
@@ -150,7 +150,7 @@ namespace BusinessLogicLayer.Services
                 {
                     _response.IsSuccess = false;
                     _response.StatusCode = HttpStatusCode.InternalServerError;
-                    _response.ErrorMessage.Add($"Status {StatusesSD.Available} does not exist!");
+                    _response.ErrorMessage.Add($"Status {VillaStatusSD.Available} does not exist!");
                     return _response;
                 }
 
@@ -180,7 +180,7 @@ namespace BusinessLogicLayer.Services
         {
             try
             {
-                var villaSpecification = new VillaWithDetailsAndStatusSpecification(updateDto.Id, true);
+                var villaSpecification = new FindVillaWithDetailsAndStatusSpecification(updateDto.Id, true);
 
                 var villaFromDb = await _unitOfWork.Villas.FindSingle(villaSpecification);
 
@@ -235,7 +235,7 @@ namespace BusinessLogicLayer.Services
                     return _response;
                 }
 
-                var villaSpecification = new VillaWithDetailsAndStatusSpecification(id);
+                var villaSpecification = new FindVillaWithDetailsAndStatusSpecification(id);
 
                 var villa = await _unitOfWork.Villas.FindSingle(villaSpecification);
 
