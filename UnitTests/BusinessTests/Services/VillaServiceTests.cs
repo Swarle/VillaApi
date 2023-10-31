@@ -158,7 +158,7 @@ namespace UnitTests.BusinessTests.Services
                     Status = new VillaStatus
                     {
                         Id = Guid.Parse("631CC936-E6EF-4D14-8642-553C750F2788"),
-                        Status = StatusesSD.Available
+                        Status = VillaStatusSD.Available
                     }
                 },
                 new Villa
@@ -182,7 +182,7 @@ namespace UnitTests.BusinessTests.Services
                     Status = new VillaStatus
                     {
                         Id = Guid.Parse("1B8C6DF0-DD9C-4CB6-AC63-E10B345CB077"),
-                        Status = StatusesSD.Available,
+                        Status = VillaStatusSD.Available,
                     }
                 }
             };
@@ -349,7 +349,7 @@ namespace UnitTests.BusinessTests.Services
             var villaStatus = new VillaStatus
             {
                 Id = Guid.NewGuid(),
-                Status = StatusesSD.Available
+                Status = VillaStatusSD.Available
             };
 
             var expectedResult = _mapper.Map<VillaDto>(_mapper.Map<Villa>(villaCreateDto));
@@ -498,7 +498,7 @@ namespace UnitTests.BusinessTests.Services
             var villaStatus = new VillaStatus
             {
                 Id = Guid.NewGuid(),
-                Status = StatusesSD.Available
+                Status = VillaStatusSD.Available
             };
 
             var updateDto = new VillaUpdateDto
@@ -511,7 +511,7 @@ namespace UnitTests.BusinessTests.Services
                 Price = 1,
                 Rate = 1,
                 Sqmt = 1,
-                Status = StatusesSD.Available,
+                Status = VillaStatusSD.Available,
                 VillaNumber = 1,
                 VillaStatusId = villaStatus.Id
             };
@@ -553,7 +553,7 @@ namespace UnitTests.BusinessTests.Services
                 Price = 1,
                 Rate = 1,
                 Sqmt = 1,
-                Status = StatusesSD.Available,
+                Status = VillaStatusSD.Available,
                 VillaNumber = 1
             };
             
@@ -583,7 +583,7 @@ namespace UnitTests.BusinessTests.Services
                 Price = 1,
                 Rate = 1,
                 Sqmt = 1,
-                Status = StatusesSD.Available,
+                Status = VillaStatusSD.Available,
                 VillaNumber = 1
             };
 
@@ -642,7 +642,7 @@ namespace UnitTests.BusinessTests.Services
                 Status = new VillaStatus
                 {
                     Id = statusId,
-                    Status = StatusesSD.Available
+                    Status = VillaStatusSD.Available
                 },
                 StatusId = statusId,
                 VillaDetails = new VillaDetails
@@ -746,12 +746,12 @@ namespace UnitTests.BusinessTests.Services
                 new VillaStatus
                 {
                     Id = Guid.NewGuid(),
-                    Status = StatusesSD.Available,
+                    Status = VillaStatusSD.Available,
                 },
                 new VillaStatus
                 {
                     Id = Guid.NewGuid(),
-                    Status = StatusesSD.Booked,
+                    Status = VillaStatusSD.Booked,
                 }
             };
 

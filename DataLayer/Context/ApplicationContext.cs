@@ -50,6 +50,10 @@ public partial class ApplicationContext : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.Orders)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_orders_users");
+
+            entity.HasOne(d => d.Villa).WithMany(p => p.Orders)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_orders_villa");
         });
 
         modelBuilder.Entity<Role>(entity =>
@@ -74,24 +78,24 @@ public partial class ApplicationContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_villa_villa_status");
             
-            entity.HasMany(d => d.Order).WithMany(p => p.Villa)
-                .UsingEntity<Dictionary<string, object>>(
-                    "OccupiedVilla",
-                    r => r.HasOne<Orders>().WithMany()
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK_occupied_villa_orders"),
-                    l => l.HasOne<Villa>().WithMany()
-                        .HasForeignKey("VillaId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK_occupied_villa_villa"),
-                    j =>
-                    {
-                        j.HasKey("VillaId", "OrderId");
-                        j.ToTable("occupied_villa");
-                        j.IndexerProperty<Guid>("VillaId").HasColumnName("villa_id");
-                        j.IndexerProperty<Guid>("OrderId").HasColumnName("order_id");
-                    });
+            //entity.HasMany(d => d.Order).WithMany(p => p.Villa)
+            //    .UsingEntity<Dictionary<string, object>>(
+            //        "OccupiedVilla",
+            //        r => r.HasOne<Orders>().WithMany()
+            //            .HasForeignKey("OrderId")
+            //            .OnDelete(DeleteBehavior.ClientSetNull)
+            //            .HasConstraintName("FK_occupied_villa_orders"),
+            //        l => l.HasOne<Villa>().WithMany()
+            //            .HasForeignKey("VillaId")
+            //            .OnDelete(DeleteBehavior.ClientSetNull)
+            //            .HasConstraintName("FK_occupied_villa_villa"),
+            //        j =>
+            //        {
+            //            j.HasKey("VillaId", "OrderId");
+            //            j.ToTable("occupied_villa");
+            //            j.IndexerProperty<Guid>("VillaId").HasColumnName("villa_id");
+            //            j.IndexerProperty<Guid>("OrderId").HasColumnName("order_id");
+            //        });
         });
 
         modelBuilder.Entity<VillaDetails>(entity =>

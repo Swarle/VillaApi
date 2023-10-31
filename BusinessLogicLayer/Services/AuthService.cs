@@ -40,9 +40,9 @@ namespace BusinessLogicLayer.Services
             {
                 var userSpecification = new FindUserByLoginSpecification(registrationDto.Login);
 
-                var isExistUser = await _unitOfWork.Users.FindSingle(userSpecification);
+                var isExistUser = await _unitOfWork.Users.FindAny(userSpecification);
 
-                if (isExistUser != null)
+                if (isExistUser == true)
                 {
                     _response.ErrorMessage.Add("User with this login already exist");
                     _response.StatusCode = HttpStatusCode.BadRequest;

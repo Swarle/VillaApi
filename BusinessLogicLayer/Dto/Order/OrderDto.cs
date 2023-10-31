@@ -11,13 +11,11 @@ namespace BusinessLogicLayer.Dto.Order
     public class OrderDto
     {
         public Guid Id { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public DateTime UpdatedDate { get; set; }
         public DateTime CheckIn { get; set; }
         public DateTime CheckOut { get; set; }
         public string Status { get; set; } = null!;
         public UserPartialDto User { get; set; }
-        public List<VillaDto> Villas { get; set; } = new List<VillaDto>();
+        public VillaDto Villa { get; set; }
 
     }
 }

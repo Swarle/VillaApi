@@ -42,7 +42,6 @@ public partial class Villa
     [InverseProperty("Villa")]
     public virtual VillaDetails VillaDetails { get; set; } = null!;
 
-    [ForeignKey("VillaId")]
     [InverseProperty("Villa")]
-    public virtual ICollection<Orders> Order { get; set; } = new List<Orders>();
+    public virtual ICollection<Orders> Orders { get; set; } = new List<Orders>();
 }

@@ -26,6 +26,8 @@ public partial class Orders
 
     [Column("user_id")]
     public Guid UserId { get; set; }
+    [Column("villa_id")]
+    public Guid VillaId { get; set; }
 
     [Column("check_in")]
     [Precision(0)]
@@ -43,7 +45,7 @@ public partial class Orders
     [InverseProperty("Orders")]
     public virtual Users User { get; set; } = null!;
 
-    [ForeignKey("OrderId")]
-    [InverseProperty("Order")]
-    public virtual ICollection<Villa> Villa { get; set; } = new List<Villa>();
+    [ForeignKey("VillaId")]
+    [InverseProperty("Orders")]
+    public virtual Villa Villa { get; set; }
 }

@@ -23,6 +23,5 @@ namespace BusinessLogicLayer.Dto.User
         public string Role { get; set; } = null!;
         
         public int OrdersCount { get; set; }
-
     }
 }
