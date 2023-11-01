@@ -13,5 +13,7 @@ namespace BusinessLogicLayer.Services.Interfaces
         Task<ApiResponse> GetOrdersAsync();
         Task<ApiResponse> GetOrderByIdAsync(Guid id);
         Task<ApiResponse> CreateOrderAsync(OrderCreateDto createDto);
+
+        Task<ApiResponse> UpdateOrderAsync(OrderUpdateDto updateDto);
     }
 }

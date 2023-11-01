@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using BusinessLogicLayer.Dto.Order;
+using BusinessLogicLayer.Infastructure;
 using BusinessLogicLayer.Infrastructure;
 using BusinessLogicLayer.Services.Interfaces;
 using DataLayer.Models;
@@ -152,7 +153,7 @@ namespace BusinessLogicLayer.Services
 
                 if (isVillaOccupied)
                 {
-                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.StatusCode = HttpStatusCode.Conflict;
                     _response.ErrorMessage.Add("The villa is already booked for that time!");
                     return _response;
                 }
@@ -178,6 +179,80 @@ namespace BusinessLogicLayer.Services
                 _response.ErrorMessage = new List<string> { ex.ToString() };
             }
 
+            return _response;
+        }
+
+        public async Task<ApiResponse> UpdateOrderAsync(OrderUpdateDto updateDto)
+        {
+            try
+            {
+                if (!IsValidOrderDate(updateDto.CheckIn, updateDto.CheckOut))
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.ErrorMessage.Add("The CheckIn or CheckOut fields did not pass validation!");
+                    return _response;
+                }
+
+                var orderSpecification = new FindOrderWithContactsAndVillasSpecification(updateDto.Id);
+
+                var order = await _unitOfWork.Orders.FindSingle(orderSpecification);
+
+                if (order == null)
+                {
+                    _response.StatusCode = HttpStatusCode.NotFound;
+                    _response.ErrorMessage.Add($"Order with ID {updateDto.Id} already exists");
+                    return _response;
+                }
+
+                if (order.Status.Status == OrderStatusSD.Cancelled || order.Status.Status == OrderStatusSD.Returned)
+                {
+                    _response.StatusCode = HttpStatusCode.Conflict;
+                    _response.ErrorMessage.Add("It is not possible to change the order because it has already been canceled or returned!");
+                    return _response;
+                }
+                
+                var villaOccupiedSpecification =
+                    new IsVillaOccupiedExceptOrderIdSpecification(order.VillaId,order.Id,updateDto.CheckIn,updateDto.CheckOut);
+
+                var isVillaOccupied = await _unitOfWork.Villas.FindAny(villaOccupiedSpecification);
+
+                if (isVillaOccupied)
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.ErrorMessage.Add("The villa is already booked for that time!");
+                    return _response;
+                }
+
+                var orderStatusSpecification = new FindOrderStatusSpecification(OrderStatusSD.Updated);
+
+                var orderStatus = await _unitOfWork.OrderStatus.FindSingle(orderStatusSpecification);
+
+                if (orderStatus == null)
+                {
+                    _response.StatusCode = HttpStatusCode.InternalServerError;
+                    _response.ErrorMessage.Add($"Status {OrderStatusSD.Updated} was not found!");
+                    return _response;
+                }
+
+                order.CheckIn = updateDto.CheckIn;
+                order.CheckOut = updateDto.CheckOut;
+                order.StatusId = orderStatus.Id;
+                order.Status = orderStatus;
+
+                _unitOfWork.Orders.Update(order);
+                await _unitOfWork.SaveChangesAsync();
+
+                var orderDto = _mapper.Map<OrderDto>(order);
+
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = orderDto;
+            }
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.IsSuccess = false;
+                _response.ErrorMessage = ex.FromHierarchy(e => e.InnerException).Select(e => e.Message).ToList();
+            }
             return _response;
         }
 

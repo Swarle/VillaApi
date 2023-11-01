@@ -12,5 +12,6 @@ namespace Utility
         public static string Cancelled => "Cancelled";
         public static string Completed => "Completed";
         public static string Returned => "Returned";
+        public static string Updated => "Updated";
     }
 }

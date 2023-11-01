@@ -41,5 +41,13 @@ namespace PLL.Controllers
 
             return StatusCode((int)response.StatusCode,response);
         }
+
+        [HttpPut("update-order")]
+        public async Task<ActionResult<ApiResponse>> UpdateOrderAsync(OrderUpdateDto updateDto)
+        {
+            var response = await _orderService.UpdateOrderAsync(updateDto);
+
+            return StatusCode((int)response.StatusCode, response);
+        }
     }
 }
