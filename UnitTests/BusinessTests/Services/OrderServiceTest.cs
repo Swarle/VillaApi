@@ -1000,6 +1000,84 @@ namespace UnitTests.BusinessTests.Services
         }
 
         #endregion
+        #region DeleteOrderAsync
+
+        [Test]
+        public async Task DeleteOrderAsync_WhenDeleted_ReturnsApiResponseWithStatusCode200()
+        {
+            //Arrange
+            var orderId = Guid.NewGuid();
+
+            var order = GetOrder();
+
+            var expectedResult = _mapper.Map<OrderDto>(order);
+
+            _orderRepository.Setup(e => e.FindSingle(It.IsAny<ISpecification<Orders>>())).ReturnsAsync(order);
+
+            //Act
+            var action = await _orderService.DeleteOrderAsync(orderId);
+
+            //Assert
+            action.IsSuccess.Should().BeTrue();
+            action.StatusCode.Should().Be(HttpStatusCode.OK);
+            action.ErrorMessage.Should().BeEmpty();
+
+            var result = action.Result as OrderDto;
+            result.Should().BeEquivalentTo(expectedResult);
+        }
+
+        [Test]
+        public async Task DeleteOrderAsync_WhenInvalidId_ReturnsApiResponseWithStatusCode400()
+        {
+            //Arrange
+            var orderId = Guid.Empty;
+
+            //Act
+            var action = await _orderService.DeleteOrderAsync(orderId);
+
+            //Assert
+            action.IsSuccess.Should().BeTrue();
+            action.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            action.ErrorMessage.Should().NotBeEmpty();
+            action.Result.Should().BeNull();
+        }
+
+        [Test]
+        public async Task DeleteOrderAsync_WhenOrderNotFound_ReturnsApiResponseWithStatusCode404()
+        {
+            //Arrange
+            var orderId = Guid.NewGuid();
+
+            _orderRepository.Setup(e => e.FindSingle(It.IsAny<ISpecification<Orders>>())).ReturnsAsync(null as Orders);
+
+            //Act
+            var action = await _orderService.DeleteOrderAsync(orderId);
+
+            //Assert
+            action.IsSuccess.Should().BeTrue();
+            action.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            action.ErrorMessage.Should().NotBeEmpty();
+            action.Result.Should().BeNull();
+        }
+
+        [Test]
+        public async Task DeleteOrderAsync_WhenThrowingException_ReturnsApiResponseWithStatusCode500()
+        {
+            //Arrange
+            var orderId = Guid.NewGuid();
+
+            _orderRepository.Setup(e => e.FindSingle(It.IsAny<ISpecification<Orders>>())).Throws(new Exception("Server error"));
+
+            //Act
+            var action = await _orderService.DeleteOrderAsync(orderId);
+
+            //Assert
+            action.IsSuccess.Should().BeFalse();
+            action.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+            action.ErrorMessage.Should().NotBeEmpty();
+            action.Result.Should().BeNull();
+        }
+
         #endregion
     }
 }

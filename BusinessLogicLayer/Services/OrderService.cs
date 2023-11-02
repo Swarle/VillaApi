@@ -37,7 +37,7 @@ namespace BusinessLogicLayer.Services
         {
             try
             {
-                var specification = new FindOrderWithContactsAndVillasSpecification();
+                var specification = new FindOrderWithUserAndStatusAndVillaSpecification();
 
                 var orders = await _unitOfWork.Orders.Find(specification);
 
@@ -317,6 +317,46 @@ namespace BusinessLogicLayer.Services
                 _response.IsSuccess = false;
                 _response.ErrorMessage = ex.FromHierarchy(e => e.InnerException).Select(e => e.Message).ToList();
             }
+            return _response;
+        }
+
+        public async Task<ApiResponse> DeleteOrderAsync(Guid id)
+        {
+            try
+            {
+                if (id == Guid.Empty)
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.ErrorMessage.Add("Id field is empty!");
+                    return _response;
+                }
+
+                var orderSpecification = new FindOrderWithContactsAndVillasSpecification(id);
+
+                var order = await _unitOfWork.Orders.FindSingle(orderSpecification);
+
+                if (order == null)
+                {
+                    _response.StatusCode = HttpStatusCode.NotFound;
+                    _response.ErrorMessage.Add($"Order with ID {id} already exists");
+                    return _response;
+                }
+
+                _unitOfWork.Orders.Delete(order);
+                await _unitOfWork.SaveChangesAsync();
+
+                var orderDto = _mapper.Map<OrderDto>(order);
+
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = orderDto;
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessage = ex.FromHierarchy(e => e.InnerException).Select(e => e.Message).ToList();
+            }
+
             return _response;
         }
 
