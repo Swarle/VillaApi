@@ -320,6 +320,60 @@ namespace BusinessLogicLayer.Services
             return _response;
         }
 
+        public async Task<ApiResponse> ChangeStatusAsync(OrderChangeStatusDto changeStatusDto)
+        {
+            try
+            {
+                var orderSpecification = new FindOrderWithContactsAndVillasSpecification(changeStatusDto.Id);
+
+                var order = await _unitOfWork.Orders.FindSingle(orderSpecification);
+
+                if (order == null)
+                {
+                    _response.StatusCode = HttpStatusCode.NotFound;
+                    _response.ErrorMessage.Add($"Order with Id ({changeStatusDto.Id}) does not exist!");
+                    return _response;
+                }
+
+                if (order.StatusId == changeStatusDto.StatusId)
+                {
+                    _response.StatusCode = HttpStatusCode.NotModified;
+                    _response.ErrorMessage.Add($"The order already has the status \"{order.Status.Status}\"!");
+                    return _response;
+                }
+
+                var orderStatusSpecification = new FindOrderStatusSpecification(changeStatusDto.StatusId);
+
+                var orderStatus = await _unitOfWork.OrderStatus.FindSingle(orderStatusSpecification);
+
+                if (orderStatus == null)
+                {
+                    _response.StatusCode = HttpStatusCode.NotFound;
+                    _response.ErrorMessage.Add($"Order Status from ID ({changeStatusDto.StatusId}) does not exist!");
+                    return _response;
+                }
+
+                order.Status = orderStatus;
+                order.StatusId = orderStatus.Id;
+
+                _unitOfWork.Orders.Update(order);
+                await _unitOfWork.SaveChangesAsync();
+
+                var orderDto = _mapper.Map<OrderDto>(order);
+
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = orderDto;
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessage = ex.FromHierarchy(e => e.InnerException).Select(e => e.Message).ToList();
+            }
+
+            return _response;
+        }
+
         public async Task<ApiResponse> DeleteOrderAsync(Guid id)
         {
             try

@@ -1000,6 +1000,7 @@ namespace UnitTests.BusinessTests.Services
         }
 
         #endregion
+
         #region DeleteOrderAsync
 
         [Test]
@@ -1078,6 +1079,145 @@ namespace UnitTests.BusinessTests.Services
             action.Result.Should().BeNull();
         }
 
+        #endregion
+
+        #region ChangeStatusAsync
+
+        [Test]
+        public async Task ChangeStatusAsync_WhenChanged_ReturnsApiResponseWithStatusCode200()
+        {
+            //Arrange
+            var order = GetOrder();
+
+            var orderStatus = new OrderStatus
+            {
+                Id = Guid.NewGuid(),
+                Status = OrderStatusSD.Completed,
+            };
+
+            var orderChangeStatusDto = new OrderChangeStatusDto()
+            {
+                Id = order.Id,
+                StatusId = orderStatus.Id
+            };
+
+            var expectedResult = _mapper.Map<OrderDto>(order);
+            expectedResult.Status = orderStatus.Status;
+
+            _orderRepository.Setup(e => e.FindSingle(It.IsAny<ISpecification<Orders>>())).ReturnsAsync(order);
+
+            _orderStatusRepository.Setup(e => e.FindSingle(It.IsAny<ISpecification<OrderStatus>>())).ReturnsAsync(orderStatus);
+
+            //Act
+            var action = await _orderService.ChangeStatusAsync(orderChangeStatusDto);
+
+            //Assert
+            action.IsSuccess.Should().BeTrue();
+            action.StatusCode.Should().Be(HttpStatusCode.OK);
+            action.ErrorMessage.Should().BeEmpty();
+
+            var result = action.Result as OrderDto;
+            result.Should().BeEquivalentTo(expectedResult);
+        }
+
+        [Test]
+        public async Task ChangeStatusAsync_WhenOrderNotExist_ReturnsApiResponseWithStatusCode404()
+        {
+            //Arrange
+            var orderChangeStatusDto = new OrderChangeStatusDto
+            {
+                Id = Guid.NewGuid(),
+                StatusId = Guid.NewGuid(),
+            };
+
+            _orderRepository.Setup(e => e.FindSingle(It.IsAny<ISpecification<Orders>>())).ReturnsAsync(null as Orders);
+
+            //Act
+            var action = await _orderService.ChangeStatusAsync(orderChangeStatusDto);
+
+            //Assert
+            action.IsSuccess.Should().BeTrue();
+            action.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            action.ErrorMessage.Should().NotBeEmpty();
+            action.Result.Should().BeNull();
+        }
+
+        [Test]
+        public async Task ChangeStatusAsync_WhenOrderStatusNotExist_ReturnsApiResponseWithStatusCode404()
+        {
+            //Arrange
+            var order = GetOrder();
+            
+            var orderChangeStatusDto = new OrderChangeStatusDto()
+            {
+                Id = order.Id,
+                StatusId = Guid.NewGuid()
+            };
+
+            _orderRepository.Setup(e => e.FindSingle(It.IsAny<ISpecification<Orders>>())).ReturnsAsync(order);
+
+            _orderStatusRepository.Setup(e => e.FindSingle(It.IsAny<ISpecification<OrderStatus>>()))
+                .ReturnsAsync(null as OrderStatus);
+
+            //Act
+            var action = await _orderService.ChangeStatusAsync(orderChangeStatusDto);
+
+            //Assert
+            action.IsSuccess.Should().BeTrue();
+            action.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            action.ErrorMessage.Should().NotBeEmpty();
+            action.Result.Should().BeNull();
+        }
+
+        [Test]
+        public async Task ChangeStatusAsync_WhenSameStatusId_ReturnsApiResponseWithStatusCode304()
+        {
+            //Arrange
+            var orderStatusId = Guid.NewGuid();
+
+            var order = GetOrder();
+            order.StatusId = orderStatusId;
+
+            var orderChangeStatusDto = new OrderChangeStatusDto()
+            {
+                Id = order.Id,
+                StatusId = orderStatusId
+            };
+
+            _orderRepository.Setup(e => e.FindSingle(It.IsAny<ISpecification<Orders>>())).ReturnsAsync(order);
+
+            //Act
+            var action = await _orderService.ChangeStatusAsync(orderChangeStatusDto);
+
+            //Assert
+            action.IsSuccess.Should().BeTrue();
+            action.StatusCode.Should().Be(HttpStatusCode.NotModified);
+            action.ErrorMessage.Should().NotBeEmpty();
+            action.Result.Should().BeNull();
+        }
+
+        [Test]
+        public async Task ChangeStatusAsync_WhenThrowingException_ReturnApiResponseWithStatusCode500()
+        {
+            //Arrange
+            var orderChangeStatusDto = new OrderChangeStatusDto
+            {
+                Id = Guid.NewGuid(),
+                StatusId = Guid.NewGuid(),
+            };
+
+            _orderRepository.Setup(e => e.FindSingle(It.IsAny<ISpecification<Orders>>()))
+                .Throws(new Exception("Server error"));
+
+            //Act
+            var action = await _orderService.ChangeStatusAsync(orderChangeStatusDto);
+
+            //Assert
+            action.IsSuccess.Should().BeFalse();
+            action.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+            action.ErrorMessage.Should().NotBeEmpty();
+            action.Result.Should().BeNull();
+        }
         #endregion
     }
 }
