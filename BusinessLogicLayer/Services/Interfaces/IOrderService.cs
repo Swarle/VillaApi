@@ -11,6 +11,7 @@ namespace BusinessLogicLayer.Services.Interfaces
     public interface IOrderService
     {
         Task<ApiResponse> GetOrdersAsync();
+        Task<ApiResponse> GetOrdersByUserIdAsync(Guid userId);
         Task<ApiResponse> GetOrderByIdAsync(Guid id);
         Task<ApiResponse> GetOrderStatusesAsync();
         Task<ApiResponse> CreateOrderAsync(OrderCreateDto createDto);

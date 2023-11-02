@@ -242,7 +242,7 @@ namespace BusinessLogicLayer.Services
                 if (villa == null)
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
-                    _response.ErrorMessage.Add($"Villa with id:({id.ToString()}) was not found");
+                    _response.ErrorMessage.Add($"Villa with id:({id}) was not found");
                     return _response;
                 }
 

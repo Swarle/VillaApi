@@ -193,7 +193,6 @@ namespace UnitTests.BusinessTests.Services
                 Status = new OrderStatus
                 {
                     Id = statusId,
-                    //TODO:Provide order statuses magic strings class
                     Status = VillaStatusSD.Available
                 },
                 User = new Users
@@ -753,7 +752,7 @@ namespace UnitTests.BusinessTests.Services
                 .ReturnsAsync(false);
 
             _orderStatusRepository.Setup(e => e.FindSingle(It.IsAny<ISpecification<OrderStatus>>()))
-                .ReturnsAsync((OrderStatus)null); // OrderStatus not found
+                .ReturnsAsync((OrderStatus)null); 
 
             // Act
             var action = await _orderService.UpdateOrderAsync(updateDto);
@@ -917,7 +916,87 @@ namespace UnitTests.BusinessTests.Services
         }
 
         #endregion
+
+        #region GetOrdersByUserIdAsync
+
+        [Test]
+        public async Task GetOrdersByUserIdAsync_WhenOrdersExist_ReturnsApiResponseWithStatusCode200()
+        {
+            // Arrange
+            var userId = Guid.NewGuid();
+
+            var orders = new List<Orders> { GetOrder(),GetOrder() };
+
+            var ordersDto = _mapper.Map<List<OrderDto>>(orders);
+
+            _orderRepository.Setup(e => e.Find(It.IsAny<ISpecification<Orders>>()))
+                .ReturnsAsync(orders);
+
+            // Act
+            var action = await _orderService.GetOrdersByUserIdAsync(userId);
+
+            // Assert
+            action.IsSuccess.Should().BeTrue();
+            action.StatusCode.Should().Be(HttpStatusCode.OK);
+            action.ErrorMessage.Should().BeEmpty();
+            action.Result.Should().BeEquivalentTo(ordersDto);
+        }
+
+        [Test]
+        public async Task GetOrdersByUserIdAsync_WhenEmptyId_ReturnsApiResponseWithStatusCode400()
+        {
+            // Arrange
+            var userId = Guid.Empty;
+
+            // Act
+            var action = await _orderService.GetOrdersByUserIdAsync(userId);
+
+            // Assert
+            action.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            action.ErrorMessage.Should().NotBeEmpty();
+            action.IsSuccess.Should().BeTrue();
             action.Result.Should().BeNull();
+        }
+
+        [Test]
+        public async Task GetOrdersByUserIdAsync_WhenOrdersNotExist_ReturnsApiResponseWithStatusCode404()
+        {
+            // Arrange
+            var userId = Guid.NewGuid();
+
+            var orders = new List<Orders>();
+
+            _orderRepository.Setup(e => e.Find(It.IsAny<ISpecification<Orders>>()))
+                .ReturnsAsync(orders);
+
+            // Act
+            var action = await _orderService.GetOrderByIdAsync(userId);
+
+            // Assert
+            action.IsSuccess.Should().BeTrue();
+            action.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            action.ErrorMessage.Should().NotBeEmpty();
+            action.Result.Should().BeNull();
+        }
+
+        [Test]
+        public async Task GetOrdersByUserIdAsync_WhenThrowingException_ReturnsApiResponseWithStatusCode500()
+        {
+            // Arrange
+            var exception = new Exception("Server error");
+            var orderId = Guid.NewGuid();
+
+            _orderRepository.Setup(e => e.Find(It.IsAny<ISpecification<Orders>>()))
+                .Throws(exception); 
+
+            // Act
+            var action = await _orderService.GetOrdersByUserIdAsync(orderId);
+
+            // Assert
+            action.IsSuccess.Should().BeFalse();
+            action.Result.Should().BeNull();
+            action.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+            action.ErrorMessage.Should().NotBeEmpty();
         }
 
         #endregion

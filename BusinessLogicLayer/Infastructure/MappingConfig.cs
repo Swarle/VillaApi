@@ -89,7 +89,9 @@ namespace BusinessLogicLayer.Infastructure
                 .ForMember(dest => dest.Status, opt =>
                     opt.MapFrom(src => src.Status.Status))
                 .ForMember(dest => dest.User, opt =>
-                    opt.MapFrom(src => src.User));
+                    opt.MapFrom(src => src.User))
+                .ForMember(dest => dest.Villa,
+                    opt => opt.MapFrom(src => src.Villa));
 
             CreateMap<Orders, OrderDto>()
                 .ForMember(dest => dest.Status, opt =>

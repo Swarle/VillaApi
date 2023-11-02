@@ -1,6 +1,7 @@
 ﻿using BusinessLogicLayer.Dto.Order;
 using BusinessLogicLayer.Infrastructure;
 using BusinessLogicLayer.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,6 +26,21 @@ namespace PLL.Controllers
             return StatusCode((int)response.StatusCode, response);
         }
 
+        [HttpGet("get-orders-by-userId/{userId:guid}")]
+        public async Task<ActionResult<ApiResponse>> GetByUserIdAsync(Guid userId)
+        {
+            var response = await _orderService.GetOrdersByUserIdAsync(userId);
+
+            return StatusCode((int)response.StatusCode, response);
+        }
+
+        [HttpGet("get-order-statuses")]
+        public async Task<ActionResult<ApiResponse>> GetOrderStatusesAsync()
+        {
+            var response = await _orderService.GetOrderStatusesAsync();
+
+            return StatusCode((int)response.StatusCode, response);
+        }
 
         [HttpGet("get-order/{id:guid}")]
         public async Task<ActionResult<ApiResponse>> GetByIdAsync(Guid id)
