@@ -101,6 +101,7 @@ namespace BusinessLogicLayer.Infastructure
 
             CreateMap<OrderCreateDto, Orders>();
 
+            CreateMap<OrderStatus, OrderStatusDto>();
         }
     }   
 }

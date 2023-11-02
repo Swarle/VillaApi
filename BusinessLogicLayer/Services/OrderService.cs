@@ -63,6 +63,70 @@ namespace BusinessLogicLayer.Services
             return _response;
         }
 
+        public async Task<ApiResponse> GetOrderStatusesAsync()
+        {
+            try
+            {
+                var orderStatuses = await _unitOfWork.OrderStatus.GetAllAsync();
+
+                if (!orderStatuses.Any())
+                {
+                    _response.StatusCode = HttpStatusCode.NotFound;
+                    _response.ErrorMessage.Add("No status was found!");
+                    return _response;
+                }
+
+                var orderStatusesDto = _mapper.Map<List<OrderStatusDto>>(orderStatuses);
+
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = orderStatusesDto;
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessage = ex.FromHierarchy(e => e.InnerException).Select(e => e.Message).ToList();
+            }
+            return _response;
+        }
+
+        public async Task<ApiResponse> GetOrdersByUserIdAsync(Guid userId)
+        {
+            try
+            {
+                if (userId == Guid.Empty)
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.ErrorMessage.Add("Id field is empty!");
+                    return _response;
+                }
+
+                var orderSpecification = new FindOrderByUserIdSpecification(userId);
+
+                var orders = await _unitOfWork.Orders.Find(orderSpecification);
+
+                if (!orders.Any())
+                {
+                    _response.StatusCode = HttpStatusCode.NotFound;
+                    _response.ErrorMessage.Add($"No orders found for user with ID ({userId})");
+                    return _response;
+                }
+
+                var orderDto = _mapper.Map<List<OrderDto>>(orders);
+
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = orderDto;
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessage = ex.FromHierarchy(e => e.InnerException).Select(e => e.Message).ToList();
+            }
+
+            return _response;
+        }
+
         public async Task<ApiResponse> GetOrderByIdAsync(Guid id)
         {
             try

@@ -49,5 +49,24 @@ namespace PLL.Controllers
 
             return StatusCode((int)response.StatusCode, response);
         }
+
+        [HttpPatch("change-status")]
+        [Authorize(Policy = "AdminPolicy")]
+        public async Task<ActionResult<ApiResponse>> ChangeOrderStatusAsync(OrderChangeStatusDto changeStatusDto)
+        {
+            var response = await _orderService.ChangeStatusAsync(changeStatusDto);
+
+            return StatusCode((int)response.StatusCode, response);
+        }
+
+        [HttpDelete("delete-order")]
+        [Authorize(Policy = "AdminPolicy")]
+        public async Task<ActionResult<ApiResponse>> DeleteOrderAsync(Guid id)
+        {
+            var response = await _orderService.DeleteOrderAsync(id);
+
+            return StatusCode((int)response.StatusCode, response);
+        }
+
     }
 }

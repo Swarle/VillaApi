@@ -286,7 +286,7 @@ namespace UnitTests.BusinessTests.Services
             var orderId = Guid.NewGuid();
 
             _orderRepository.Setup(e => e.FindSingle(It.IsAny<ISpecification<Orders>>()))
-                .Throws(exception); // Simulate an exception
+                .Throws(exception);
 
             // Act
             var action = await _orderService.GetOrderByIdAsync(orderId);
@@ -851,6 +851,76 @@ namespace UnitTests.BusinessTests.Services
                 }
             };
         }
+        #endregion
+
+        #region GetOrderStatusesAsync
+
+        [Test]
+        public async Task GetOrderStatusesAsync_StatusesExist_ReturnsApiResponseWithStatusCode200()
+        {
+            // Arrange
+            var orderStatuses = new List<OrderStatus>
+            {
+                new OrderStatus { Id = Guid.NewGuid(), Status = "Status1" },
+                new OrderStatus { Id = Guid.NewGuid(), Status = "Status2" }
+
+            };
+
+            var expectedResult = _mapper.Map<List<OrderStatusDto>>(orderStatuses);
+
+            _orderStatusRepository.Setup(u => u.GetAllAsync()).ReturnsAsync(orderStatuses);
+
+            // Act
+            var action = await _orderService.GetOrderStatusesAsync();
+
+            // Assert
+            action.IsSuccess.Should().BeTrue();
+            action.StatusCode.Should().Be(HttpStatusCode.OK);
+            action.ErrorMessage.Should().BeEmpty();
+
+            var result = action.Result as List<OrderStatusDto>;
+            result.Should().BeEquivalentTo(expectedResult);
+        }
+
+        [Test]
+        public async Task GetOrderStatusesAsync_WhenNoStatusesFound_ReturnsApiResponseWithStatusCode404()
+        {
+            // Arrange
+            var orderStatuses = new List<OrderStatus>();
+
+            _orderStatusRepository.Setup(u => u.GetAllAsync()).ReturnsAsync(orderStatuses);
+
+            // Act
+            var action = await _orderService.GetOrderStatusesAsync();
+
+            // Assert
+            action.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            action.IsSuccess.Should().BeTrue();
+            action.ErrorMessage.Should().NotBeEmpty();
+            action.Result.Should().BeNull();
+        }
+
+        [Test]
+        public async Task GetOrderStatusesAsync_ThrowingException_ReturnsApiResponseWithStatusCode500()
+        {
+            // Arrange
+            _orderStatusRepository.Setup(u => u.GetAllAsync()).Throws(new Exception("Server error"));
+
+            // Act
+            var action = await _orderService.GetOrderStatusesAsync();
+
+            // Assert
+            action.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+            action.IsSuccess.Should().BeFalse();
+            action.ErrorMessage.Should().NotBeEmpty();
+            action.Result.Should().BeNull();
+        }
+
+        #endregion
+            action.Result.Should().BeNull();
+        }
+
+        #endregion
         #endregion
     }
 }
