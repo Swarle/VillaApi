@@ -1,4 +1,5 @@
-﻿using BusinessLogicLayer.Infrastructure;
+﻿using BusinessLogicLayer.Dto.User;
+using BusinessLogicLayer.Infrastructure;
 using BusinessLogicLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -41,6 +42,15 @@ namespace PLL.Controllers
 
             return StatusCode((int)response.StatusCode, response);
         }
+
+        [HttpPatch("change-password")]
+        public async Task<ActionResult<ApiResponse>> ChangePasswordAsync(ChangePasswordDto changePasswordDto)
+        {
+            var response = await _userService.ChangePasswordAsync(changePasswordDto);
+
+            return StatusCode((int)response.StatusCode, response);
+        }
+
 
     }
 }

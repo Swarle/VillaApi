@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using BusinessLogicLayer.Dto.User;
+using BusinessLogicLayer.Infrastructure;
 using BusinessLogicLayer.Services;
 using BusinessLogicLayer.Services.Interfaces;
 using DataLayer.Models;
@@ -296,6 +297,110 @@ namespace UnitTests.BusinessTests.Services
 
         #endregion
 
+        #region ChangePasswordAsync
+
+        [Test]
+        public async Task ChangePasswordAsync_WhenChanged_ReturnsApiResponseWithStatusCode204()
+        {
+            //Arrange
+            var changePasswordDto = new ChangePasswordDto
+            {
+                Id = Guid.NewGuid(),
+                ConfirmPassword = "New password",
+                NewPassword = "New password",
+                Password = "password"
+            };
+
+            var user = GetUser();
+
+            _userRepository.Setup(e => e.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync(user);
+
+            //Act
+            var action = await _userService.ChangePasswordAsync(changePasswordDto);
+
+            //Assert
+            action.IsSuccess.Should().BeTrue();
+            action.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            action.ErrorMessage.Should().BeEmpty();
+            action.Result.Should().BeNull();
+        }
+
+        [Test]
+        public async Task ChangePasswordAsync_WhenUserNotFound_ReturnsApiResponseWithStatusCode404()
+        {
+            //Arrange
+            var changePasswordDto = new ChangePasswordDto
+            {
+                Id = Guid.NewGuid(),
+                ConfirmPassword = "New password",
+                NewPassword = "New password",
+                Password = "password"
+            };
+
+            _userRepository.Setup(e => e.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync(null as Users);
+
+            //Act
+            var action = await _userService.ChangePasswordAsync(changePasswordDto);
+
+            //Assert
+            action.IsSuccess.Should().BeTrue();
+            action.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            action.ErrorMessage.Should().NotBeEmpty();
+            action.Result.Should().BeNull();
+        }
+
+        [Test]
+        public async Task ChangePasswordAsync_WhenPasswordInvalid_ReturnsApiResponseWithStatusCode401()
+        {
+            //Arrange
+            var changePasswordDto = new ChangePasswordDto
+            {
+                Id = Guid.NewGuid(),
+                ConfirmPassword = "New password",
+                NewPassword = "New password",
+                Password = "invalid password"
+            };
+
+            var user = GetUser();
+
+            _userRepository.Setup(e => e.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync(user);
+
+            //Act
+            var action = await _userService.ChangePasswordAsync(changePasswordDto);
+
+            //Assert
+            action.IsSuccess.Should().BeTrue();
+            action.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            action.ErrorMessage.Should().NotBeEmpty();
+            action.Result.Should().BeNull();
+        }
+
+        [Test]
+        public async Task ChangePasswordAsync_WhenThrowingException_ReturnsApiResponseWithStatusCode500()
+        {
+            //Arrange
+            var changePasswordDto = new ChangePasswordDto
+            {
+                Id = Guid.NewGuid(),
+                ConfirmPassword = "New password",
+                NewPassword = "New password",
+                Password = "password"
+            };
+
+            _userRepository.Setup(e => e.GetByIdAsync(It.IsAny<Guid>())).ThrowsAsync(new Exception("Server error"));
+
+            //Act
+            var action = await _userService.ChangePasswordAsync(changePasswordDto);
+
+            //Assert
+            action.IsSuccess.Should().BeFalse();
+            action.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+            action.ErrorMessage.Should().NotBeEmpty();
+            action.Result.Should().BeNull();
+        }
+
+        #endregion
+
         private static Users GetUser()
         {
             var userId = Guid.NewGuid();
@@ -310,7 +415,7 @@ namespace UnitTests.BusinessTests.Services
                 CreatedDate = DateTime.Now,
                 FirstName = "first name",
                 LastName = "last name",
-                HashedPassword = "password",
+                HashedPassword = PasswordHasher.HashPassword("password"),
                 Login = "login",
                 Role = new Role
                 {

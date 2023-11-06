@@ -129,25 +129,43 @@ namespace BusinessLogicLayer.Services
             return _response;
         }
 
-        //        var user = await _unitOfWork.Users.FindSingle(specification);
+        public async Task<ApiResponse> ChangePasswordAsync(ChangePasswordDto changePasswordDto)
+        {
+            try
+            {
+                var user = await _unitOfWork.Users.GetByIdAsync(changePasswordDto.Id);
 
-        //        if (user == null)
-        //        {
-        //            _response.StatusCode = HttpStatusCode.NotFound;
-        //            _response.ErrorMessage.Add("User with this id not exist!");
-        //            return _response;
-        //        }
+                if (user == null)
+                {
+                    _response.StatusCode = HttpStatusCode.NotFound;
+                    _response.ErrorMessage.Add($"User with Id ({changePasswordDto.Id}) not found");
+                    return _response;
+                }
 
+                if (!PasswordHasher.VerifyHashedPassword(user.HashedPassword, changePasswordDto.Password))
+                {
+                    _response.StatusCode = HttpStatusCode.Unauthorized;
+                    _response.ErrorMessage.Add("The password was entered incorrectly");
+                    return _response;
+                }
 
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        _response.IsSuccess = false;
-        //        _response.StatusCode = HttpStatusCode.InternalServerError;
-        //        _response.ErrorMessage = new List<string> { e.ToString() };
-        //    }
+                var hashedNewPassword = PasswordHasher.HashPassword(changePasswordDto.NewPassword);
 
-        //    return _response;
-        //}
+                user.HashedPassword = hashedNewPassword;
+
+                _unitOfWork.Users.Update(user);
+                await _unitOfWork.SaveChangesAsync();
+
+                _response.StatusCode = HttpStatusCode.NoContent;
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessage = new List<string> { ex.ToString() };
+            }
+
+            return _response;
+        }
     }
 }
