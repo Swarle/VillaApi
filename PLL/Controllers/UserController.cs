@@ -20,6 +20,11 @@ namespace PLL.Controllers
 
         [HttpGet("get-all-users")]
         [Authorize("AdminPolicy")]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponse>> GetAllUsersAsync()
         {
             var response = await _userService.GetAllUsersAsync();
@@ -28,6 +33,10 @@ namespace PLL.Controllers
         }
 
         [HttpGet("get-user/{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponse>> GetUserByIdAsync(Guid id)
         {
             var response = await _userService.GetUserByIdAsync(id);
@@ -36,6 +45,12 @@ namespace PLL.Controllers
         }
 
         [HttpPut("update-user")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponse>> UpdateUserAsync(UserUpdateDto updateDto)
         {
             var response = await _userService.UpdateUserAsync(updateDto);
@@ -44,6 +59,12 @@ namespace PLL.Controllers
         }
 
         [HttpPatch("change-password")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponse>> ChangePasswordAsync(ChangePasswordDto changePasswordDto)
         {
             var response = await _userService.ChangePasswordAsync(changePasswordDto);

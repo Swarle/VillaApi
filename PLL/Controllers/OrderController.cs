@@ -19,6 +19,9 @@ namespace PLL.Controllers
         }
 
         [HttpGet("get-orders")]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponse>> GetOrdersAsync()
         {
             var response = await _orderService.GetOrdersAsync();
@@ -27,6 +30,10 @@ namespace PLL.Controllers
         }
 
         [HttpGet("get-orders-by-userId/{userId:guid}")]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponse>> GetByUserIdAsync(Guid userId)
         {
             var response = await _orderService.GetOrdersByUserIdAsync(userId);
@@ -35,6 +42,9 @@ namespace PLL.Controllers
         }
 
         [HttpGet("get-order-statuses")]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponse>> GetOrderStatusesAsync()
         {
             var response = await _orderService.GetOrderStatusesAsync();
@@ -43,6 +53,10 @@ namespace PLL.Controllers
         }
 
         [HttpGet("get-order/{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponse>> GetByIdAsync(Guid id)
         {
             var response = await _orderService.GetOrderByIdAsync(id);
@@ -51,6 +65,11 @@ namespace PLL.Controllers
         }
 
         [HttpPost("make-order")]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status409Conflict,Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponse>> MakeOrderAsync(OrderCreateDto createDto)
         {
             var response = await _orderService.CreateOrderAsync(createDto);
@@ -59,6 +78,11 @@ namespace PLL.Controllers
         }
 
         [HttpPut("update-order")]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponse>> UpdateOrderAsync(OrderUpdateDto updateDto)
         {
             var response = await _orderService.UpdateOrderAsync(updateDto);
@@ -68,6 +92,13 @@ namespace PLL.Controllers
 
         [HttpPatch("change-status")]
         [Authorize(Policy = "AdminPolicy")]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status304NotModified, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponse>> ChangeOrderStatusAsync(OrderChangeStatusDto changeStatusDto)
         {
             var response = await _orderService.ChangeStatusAsync(changeStatusDto);
@@ -77,6 +108,12 @@ namespace PLL.Controllers
 
         [HttpDelete("delete-order")]
         [Authorize(Policy = "AdminPolicy")]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponse>> DeleteOrderAsync(Guid id)
         {
             var response = await _orderService.DeleteOrderAsync(id);

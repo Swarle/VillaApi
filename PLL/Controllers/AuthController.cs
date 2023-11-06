@@ -19,6 +19,9 @@ namespace PLL.Controllers
         }
 
         [HttpPost("login")]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponse>> LoginAsync([FromBody] LoginDto loginDto)
         {
             var response = await _authService.LoginAsync(loginDto);
@@ -28,6 +31,11 @@ namespace PLL.Controllers
 
 
         [HttpPost("register")]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponse>> RegisterAsync([FromBody] RegistrationDto registerDto)
         {
             var response = await _authService.RegisterUserAsync(registerDto);

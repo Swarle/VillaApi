@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Mime;
 using BusinessLogicLayer.Dto.Villa;
 using BusinessLogicLayer.Infrastructure;
 using BusinessLogicLayer.Services.Interfaces;
@@ -25,6 +26,9 @@ namespace PLL.Controllers
 
 
         [HttpGet("get-villa-partial")]
+        [ProducesResponseType(StatusCodes.Status404NotFound,Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponse>> GetVillasPartialAsync()
         {
             var response = await _villaService.GetVillasPartialAsync();
@@ -33,6 +37,9 @@ namespace PLL.Controllers
         }
 
         [HttpGet("get-villas-statuses")]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponse>> GetVillaStatusesAsync()
         {
             var response = await _villaService.GetVillaStatusesAsync();
@@ -40,7 +47,11 @@ namespace PLL.Controllers
             return StatusCode((int)response.StatusCode, response);
         }
         
+
         [HttpGet("get-villas")]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponse>> GetVillasAsync()
         {
             var response = await _villaService.GetVillasAsync();
@@ -49,6 +60,10 @@ namespace PLL.Controllers
         }
 
         [HttpGet("get-villa/{id:Guid}")]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponse>> GetVillaAsync(Guid id)
         {
             var response = await _villaService.GetVillaByIdAsync(id);
@@ -57,6 +72,8 @@ namespace PLL.Controllers
         }
 
         [HttpPost("create-villa")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponse>> CreateVillaAsync([FromBody] VillaCreateDto createDto)
         {
             var response = await _villaService.CreateVillaAsync(createDto);
@@ -65,7 +82,10 @@ namespace PLL.Controllers
         }
 
         [HttpPut("update-villa")]
-        
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponse>> UpdateVillaAsync([FromBody] VillaUpdateDto updateDto)
         {
             var response = await _villaService.UpdateVillaAsync(updateDto);
@@ -75,6 +95,12 @@ namespace PLL.Controllers
 
         [HttpDelete("delete-villa/{id:guid}")]
         [Authorize(Policy = "AdminPolicy")]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<ApiResponse>> DeleteVillaAsync(Guid id)
         {
             var response = await _villaService.DeleteVillaAsync(id);

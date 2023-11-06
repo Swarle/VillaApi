@@ -144,7 +144,7 @@ namespace BusinessLogicLayer.Services
 
                 if (!PasswordHasher.VerifyHashedPassword(user.HashedPassword, changePasswordDto.Password))
                 {
-                    _response.StatusCode = HttpStatusCode.Unauthorized;
+                    _response.StatusCode = HttpStatusCode.BadRequest;
                     _response.ErrorMessage.Add("The password was entered incorrectly");
                     return _response;
                 }

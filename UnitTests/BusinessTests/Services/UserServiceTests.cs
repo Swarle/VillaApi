@@ -350,7 +350,7 @@ namespace UnitTests.BusinessTests.Services
         }
 
         [Test]
-        public async Task ChangePasswordAsync_WhenPasswordInvalid_ReturnsApiResponseWithStatusCode401()
+        public async Task ChangePasswordAsync_WhenPasswordInvalid_ReturnsApiResponseWithStatusCode400()
         {
             //Arrange
             var changePasswordDto = new ChangePasswordDto
@@ -370,7 +370,7 @@ namespace UnitTests.BusinessTests.Services
 
             //Assert
             action.IsSuccess.Should().BeTrue();
-            action.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            action.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             action.ErrorMessage.Should().NotBeEmpty();
             action.Result.Should().BeNull();
         }
