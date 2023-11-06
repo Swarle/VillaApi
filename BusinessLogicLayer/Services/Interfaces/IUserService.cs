@@ -11,5 +11,6 @@ namespace BusinessLogicLayer.Services.Interfaces
     {
         Task<ApiResponse> GetAllUsersAsync();
         Task<ApiResponse> GetUserByIdAsync(Guid id);
+        Task<ApiResponse> UpdateUserAsync(UserUpdateDto updateDto);
     }
 }

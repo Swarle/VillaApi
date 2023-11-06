@@ -213,6 +213,88 @@ namespace UnitTests.BusinessTests.Services
         }
         #endregion
 
+        #region UpdateUserAsync
+
+        [Test]
+        public async Task UpdateUserAsync_WhenUpdated_ReturnsApiResponseWithStatusCode200()
+        {
+            //Arrange
+            var updateDto = new UserUpdateDto
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "first name",
+                LastName = "last name"
+            };
+
+            var user = GetUser();
+            
+            _userRepository.Setup(e => e.FindSingle(It.IsAny<ISpecification<Users>>())).ReturnsAsync(user);
+
+            user.FirstName = updateDto.FirstName;
+            user.LastName = updateDto.LastName;
+
+            var expectedResult = _mapper.Map<UserDto>(user);
+
+            //Act
+            var action = await _userService.UpdateUserAsync(updateDto);
+
+            //Assert
+            action.IsSuccess.Should().BeTrue();
+            action.StatusCode.Should().Be(HttpStatusCode.OK);
+            action.ErrorMessage.Should().BeEmpty();
+
+            var result = action.Result as UserDto;
+            result.Should().BeEquivalentTo(expectedResult);
+        }
+
+        [Test]
+        public async Task UpdateUserAsync_WhenUserNotExist_ReturnsApiResponseWithStatusCode404()
+        {
+            //Arrange
+            var updateDto = new UserUpdateDto
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "first name",
+                LastName = "last name"
+            };
+
+            _userRepository.Setup(e => e.FindSingle(It.IsAny<ISpecification<Users>>())).ReturnsAsync(null as Users);
+
+            //Act
+            var action = await _userService.UpdateUserAsync(updateDto);
+
+            //Assert
+            action.IsSuccess.Should().BeTrue();
+            action.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            action.ErrorMessage.Should().NotBeEmpty();
+            action.Result.Should().BeNull();
+        }
+
+        [Test]
+        public async Task UpdateUserAsync_WhenThrowingException_ReturnsApiResponseWithStatusCode500()
+        {
+            //Arrange
+            var updateDto = new UserUpdateDto
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "first name",
+                LastName = "last name"
+            };
+
+            _userRepository.Setup(e => e.FindSingle(It.IsAny<ISpecification<Users>>()))
+                .Throws(new Exception("Server error"));
+
+            //Act
+            var action = await _userService.UpdateUserAsync(updateDto);
+
+            //Assert
+            action.IsSuccess.Should().BeFalse();
+            action.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+            action.ErrorMessage.Should().NotBeEmpty();
+            action.Result.Should().BeNull();
+        }
+
+        #endregion
 
         private static Users GetUser()
         {

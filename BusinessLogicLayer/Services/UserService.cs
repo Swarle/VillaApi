@@ -93,7 +93,41 @@ namespace BusinessLogicLayer.Services
             return _response;
         }
 
-        //        var specification = new FindUserWithRoleSpecification(id);
+        public async Task<ApiResponse> UpdateUserAsync(UserUpdateDto updateDto)
+        {
+            try
+            {
+                var specification = new FindUserWithRoleAndOrdersSpecification(updateDto.Id);
+
+                var user = await _unitOfWork.Users.FindSingle(specification);
+
+                if (user == null)
+                {
+                    _response.StatusCode = HttpStatusCode.NotFound;
+                    _response.ErrorMessage.Add($"User with Id ({updateDto.Id}) not found");
+                    return _response;
+                }
+
+                user.FirstName = updateDto.FirstName;
+                user.LastName = updateDto.LastName;
+
+                _unitOfWork.Users.Update(user);
+                await _unitOfWork.SaveChangesAsync();
+
+                var userDto = _mapper.Map<UserDto>(user);
+
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = userDto;
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessage = new List<string> { ex.ToString() };
+            }
+
+            return _response;
+        }
 
         //        var user = await _unitOfWork.Users.FindSingle(specification);
 
