@@ -55,17 +55,43 @@ namespace BusinessLogicLayer.Services
             return _response;
         }
 
-        //TODO: End this method when the OrderService is done
-        //public async Task<ApiResponse> GetUserByIdAsync(Guid id)
-        //{
-        //    try
-        //    {
-        //        if (id == Guid.Empty)
-        //        {
-        //            _response.StatusCode = HttpStatusCode.BadRequest;
-        //            _response.ErrorMessage.Add("Id is empty!");
-        //            return _response;
-        //        }
+        public async Task<ApiResponse> GetUserByIdAsync(Guid id)
+        {
+            try
+            {
+                if (id == Guid.Empty)
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.ErrorMessage.Add("Id filed is empty!");
+                    return _response;
+                }
+
+                var specification = new FindUserWithRoleAndOrdersSpecification(id);
+
+                var user = await _unitOfWork.Users.FindSingle(specification);
+
+                if (user == null)
+                {
+                    _response.StatusCode = HttpStatusCode.NotFound;
+                    _response.ErrorMessage.Add("User with this id not exist!");
+                    return _response;
+                }
+
+                var userDto = _mapper.Map<UserDto>(user);
+
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = userDto;
+
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessage = new List<string> { ex.ToString() };
+            }
+
+            return _response;
+        }
 
         //        var specification = new FindUserWithRoleSpecification(id);
 

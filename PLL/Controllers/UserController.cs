@@ -25,6 +25,13 @@ namespace PLL.Controllers
 
             return StatusCode((int)response.StatusCode, response);
         }
+        [HttpGet("get-user/{id:guid}")]
+        public async Task<ActionResult<ApiResponse>> GetUserByIdAsync(Guid id)
+        {
+            var response = await _userService.GetUserByIdAsync(id);
+
+            return StatusCode((int)response.StatusCode, response);
+        }
 
     }
 }

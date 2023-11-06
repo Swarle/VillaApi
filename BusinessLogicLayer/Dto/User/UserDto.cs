@@ -19,6 +19,6 @@ namespace BusinessLogicLayer.Dto.User
 
         public string Role { get; set; } = null!;
 
-        public OrderPartialDto Orders { get; set; }
+        public List<OrderPartialDto> Orders { get; set; } = new List<OrderPartialDto>();
     }
 }

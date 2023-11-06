@@ -132,5 +132,137 @@ namespace UnitTests.BusinessTests.Services
         }
 
         #endregion
+
+        #region GetUserByIdAsync
+
+        [Test]
+        public async Task GetUserByIdAsync_WhenUserExist_ReturnsApiResponseWithStatusCode200()
+        {
+            //Arrange
+            var id = Guid.NewGuid();
+
+            var user = GetUser();
+
+            _userRepository.Setup(e => e.FindSingle(It.IsAny<ISpecification<Users>>())).ReturnsAsync(user);
+
+            var expectedResult = _mapper.Map<UserDto>(user);
+
+            //Act
+            var action = await _userService.GetUserByIdAsync(id);
+
+            //Assert
+            action.IsSuccess.Should().BeTrue();
+            action.StatusCode.Should().Be(HttpStatusCode.OK);
+            action.ErrorMessage.Should().BeEmpty();
+            
+            var result = action.Result as UserDto;
+            result.Should().BeEquivalentTo(expectedResult);
+        }
+
+        [Test]
+        public async Task GetUserByIdAsync_WhenIdEmpty_ReturnsApiResponseWithStatusCode400()
+        {
+            //Arrange
+            var id = Guid.Empty;
+
+            //Act
+            var action = await _userService.GetUserByIdAsync(id);
+
+            //Assert
+            action.IsSuccess.Should().BeTrue();
+            action.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            action.ErrorMessage.Should().NotBeEmpty();
+            action.Result.Should().BeNull();
+        }
+
+        [Test]
+        public async Task GetUserByIdAsync_WhenUserNotFound_ReturnsApiResponseWithStatusCode404()
+        {
+            //Arrange
+            var id = Guid.NewGuid();
+
+            _userRepository.Setup(e => e.FindSingle(It.IsAny<ISpecification<Users>>())).ReturnsAsync(null as Users);
+
+            //Act
+            var action = await _userService.GetUserByIdAsync(id);
+
+            //Assert
+            action.IsSuccess.Should().BeTrue();
+            action.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            action.ErrorMessage.Should().NotBeEmpty();
+            action.Result.Should().BeNull();
+        }
+
+        [Test]
+        public async Task GetUserByIdAsync_WhenThrowingException_ReturnsApiResponseWithStatusCode500()
+        {
+            //Arrange
+            var id = Guid.NewGuid();
+
+            _userRepository.Setup(e => e.FindSingle(It.IsAny<ISpecification<Users>>()))
+                .Throws(new Exception("Server error"));
+
+            //Act
+            var action = await _userService.GetUserByIdAsync(id);
+
+            //Assert
+            action.IsSuccess.Should().BeFalse();
+            action.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+            action.ErrorMessage.Should().NotBeEmpty();
+            action.Result.Should().BeNull();
+        }
+        #endregion
+
+
+        private static Users GetUser()
+        {
+            var userId = Guid.NewGuid();
+            var orderId = Guid.NewGuid();
+            var roleId = Guid.NewGuid();
+            var orderStatusId = Guid.NewGuid();
+            var villaId = Guid.NewGuid();
+
+            return new Users
+            {
+                Id = userId,
+                CreatedDate = DateTime.Now,
+                FirstName = "first name",
+                LastName = "last name",
+                HashedPassword = "password",
+                Login = "login",
+                Role = new Role
+                {
+                    Id = roleId,
+                    RoleName = RolesSD.Customer
+                },
+                RoleId = roleId,
+                Orders = new List<Orders>
+                {
+                    new Orders
+                    {
+                        Id = orderId,
+                        CheckIn = DateTime.Now,
+                        CheckOut = DateTime.Now.AddDays(7),
+                        CreatedDate = DateTime.Now,
+                        UpdatedDate = DateTime.Now,
+                        StatusId = orderStatusId,
+                        UserId = userId,
+                        Status = new OrderStatus
+                        {
+                            Id = orderStatusId,
+                            Status = OrderStatusSD.Completed
+                        },
+                        Villa = new Villa
+                        {
+                            Id = villaId,
+                            Describe = "describe",
+                            ImageUrl = "image",
+                            Name = "villa",
+                            Price = 1
+                        }
+                    }
+                }
+            };
+        }
     }
 }

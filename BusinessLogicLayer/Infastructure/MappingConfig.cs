@@ -81,6 +81,12 @@ namespace BusinessLogicLayer.Infastructure
                 .ForMember(dest => dest.OrdersCount, opt =>
                     opt.MapFrom(src => src.Orders.Count));
 
+            CreateMap<Users, UserDto>()
+                .ForMember(dest => dest.Role, opt =>
+                    opt.MapFrom(src => src.Role.RoleName))
+                .ForMember(dest => dest.Orders, opt =>
+                    opt.MapFrom(src => src.Orders));
+
         }
 
         private void OrderMapConfiguration()

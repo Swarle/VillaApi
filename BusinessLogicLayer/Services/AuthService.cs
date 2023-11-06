@@ -42,7 +42,7 @@ namespace BusinessLogicLayer.Services
 
                 var isExistUser = await _unitOfWork.Users.FindAny(userSpecification);
 
-                if (isExistUser == true)
+                if (isExistUser)
                 {
                     _response.ErrorMessage.Add("User with this login already exist");
                     _response.StatusCode = HttpStatusCode.BadRequest;

@@ -10,5 +10,6 @@ namespace BusinessLogicLayer.Services.Interfaces
     public interface IUserService
     {
         Task<ApiResponse> GetAllUsersAsync();
+        Task<ApiResponse> GetUserByIdAsync(Guid id);
     }
 }
