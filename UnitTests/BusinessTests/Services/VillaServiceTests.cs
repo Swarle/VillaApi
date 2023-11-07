@@ -16,6 +16,7 @@ using DataLayer.Specification.VillaSpecification;
 using DataLayer.UnitOfWork;
 using DataLayer.UnitOfWork.Interfaces;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Moq;
 using UnitTests.BusinessTests.EqualityComparers;
@@ -47,7 +48,10 @@ namespace UnitTests.BusinessTests.Services
             _unitOfWork = new Mock<IUnitOfWork>();
             _unitOfWork.Setup(e => e.Villas).Returns(_villaRepository.Object);
             _unitOfWork.Setup(e => e.VillaStatus).Returns(_villaStatusRepository.Object);
-            _villaService = new VillaService(_unitOfWork.Object, _mapper);
+            var httpContextAccessor = new Mock<IHttpContextAccessor>();
+            var context = new DefaultHttpContext();
+            httpContextAccessor.Setup(e => e.HttpContext).Returns(context);
+            _villaService = new VillaService(_unitOfWork.Object, _mapper,httpContextAccessor.Object);
         }
 
         #region GetVillasPartialAsync
@@ -338,7 +342,7 @@ namespace UnitTests.BusinessTests.Services
             {
                 Name = "Villa",
                 Describe = "Describe",
-                ImageUrl = "Image",
+                Image = It.IsAny<IFormFile>(),
                 Occupancy = 1,
                 Price = 1,
                 Rate = 1,
@@ -378,26 +382,6 @@ namespace UnitTests.BusinessTests.Services
 
         }
 
-        //[Test]
-        //public async Task CreateVillaAsync_WhenVillaCreateDtoEmpty_ReturnApiResponseWithStatusCode400()
-        //{
-        //    //Arrange
-        //    var villaCreateDto = new VillaCreateDto
-        //    {
-        //        Name = "Villa"
-        //    };
-
-        //    var expectedErrorList = new List<string> { "Villa is null or empty!" };
-
-        //    //Act
-        //    var action = await _villaService.CreateVillaAsync(villaCreateDto);
-
-        //    //Assert
-        //    action.IsSuccess.Should().BeTrue();
-        //    action.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        //    action.ErrorMessage.Should().BeEquivalentTo(expectedErrorList);
-        //    action.Result.Should().BeNull();
-        //}
 
         [Test]
         public async Task CreateVillaAsync_WhenVillaAlreadyExist_ReturnsApiResponseWithStatusCode400()
@@ -407,7 +391,7 @@ namespace UnitTests.BusinessTests.Services
             {
                 Name = "Villa",
                 Describe = "Describe",
-                ImageUrl = "Image",
+                Image = It.IsAny<IFormFile>(),
                 Occupancy = 1,
                 Price = 1,
                 Rate = 1,
@@ -436,7 +420,7 @@ namespace UnitTests.BusinessTests.Services
             {
                 Name = "Villa",
                 Describe = "Describe",
-                ImageUrl = "Image",
+                Image = It.IsAny<IFormFile>(),
                 Occupancy = 1,
                 Price = 1,
                 Rate = 1,
@@ -465,7 +449,7 @@ namespace UnitTests.BusinessTests.Services
             {
                 Name = "Villa",
                 Describe = "Describe",
-                ImageUrl = "Image",
+                Image = It.IsAny<IFormFile>(),
                 Occupancy = 1,
                 Price = 1,
                 Rate = 1,
@@ -505,13 +489,12 @@ namespace UnitTests.BusinessTests.Services
             {
                 Id = Guid.NewGuid(),
                 Describe = "Test",
-                ImageUrl = "Image",
+                Image = It.IsAny<IFormFile>(),
                 Occupancy = 1,
                 Name = "Villa",
                 Price = 1,
                 Rate = 1,
                 Sqmt = 1,
-                Status = VillaStatusSD.Available,
                 VillaNumber = 1,
                 VillaStatusId = villaStatus.Id
             };
@@ -547,13 +530,12 @@ namespace UnitTests.BusinessTests.Services
             {
                 Id = Guid.NewGuid(),
                 Describe = "Test",
-                ImageUrl = "Image",
+                Image = It.IsAny<IFormFile>(),
                 Occupancy = 1,
                 Name = "Villa",
                 Price = 1,
                 Rate = 1,
                 Sqmt = 1,
-                Status = VillaStatusSD.Available,
                 VillaNumber = 1
             };
             
@@ -577,13 +559,12 @@ namespace UnitTests.BusinessTests.Services
             {
                 Id = Guid.NewGuid(),
                 Describe = "Test",
-                ImageUrl = "Image",
+                Image = It.IsAny<IFormFile>(),
                 Occupancy = 1,
                 Name = "Villa",
                 Price = 1,
                 Rate = 1,
                 Sqmt = 1,
-                Status = VillaStatusSD.Available,
                 VillaNumber = 1
             };
 

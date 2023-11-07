@@ -25,6 +25,9 @@ public partial class Villa
 
     [Column("image_url")]
     public string ImageUrl { get; set; } = null!;
+
+    [Column("image_local_path")]
+    public string? ImageLocalPath { get; set; }
     
     [Column("villa_number")]
     public int VillaNumber { get; set; }

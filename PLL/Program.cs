@@ -68,6 +68,8 @@ namespace PLL
                     };
                 });
 
+            builder.Services.AddHttpContextAccessor();
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -170,13 +172,13 @@ namespace PLL
                 app.MapControllers();
             }
 
+            app.UseStaticFiles();
+
             app.UseHttpsRedirection();
 
             app.UseAuthentication();
             app.UseAuthorization();
 
-           
-            
             await app.RunAsync();
         }
     }

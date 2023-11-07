@@ -70,7 +70,7 @@ namespace PLL.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status409Conflict,Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<ApiResponse>> MakeOrderAsync(OrderCreateDto createDto)
+        public async Task<ActionResult<ApiResponse>> MakeOrderAsync([FromBody]OrderCreateDto createDto)
         {
             var response = await _orderService.CreateOrderAsync(createDto);
 
@@ -83,7 +83,7 @@ namespace PLL.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<ApiResponse>> UpdateOrderAsync(OrderUpdateDto updateDto)
+        public async Task<ActionResult<ApiResponse>> UpdateOrderAsync([FromBody]OrderUpdateDto updateDto)
         {
             var response = await _orderService.UpdateOrderAsync(updateDto);
 

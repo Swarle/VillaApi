@@ -18,6 +18,7 @@ using DataLayer.UnitOfWork.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using Azure;
 using BusinessLogicLayer.Dto.Villa;
+using Microsoft.AspNetCore.Http;
 
 namespace BusinessLogicLayer.Services
 {
@@ -26,12 +27,14 @@ namespace BusinessLogicLayer.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ApiResponse _response;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public VillaService(IUnitOfWork unitOfWork, IMapper mapper)
+        public VillaService(IUnitOfWork unitOfWork, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _response = new ApiResponse();
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<ApiResponse> GetVillasPartialAsync()
@@ -125,11 +128,11 @@ namespace BusinessLogicLayer.Services
             return _response;
         }
 
-        public async Task<ApiResponse> CreateVillaAsync(VillaCreateDto villaCreateDto)
+        public async Task<ApiResponse> CreateVillaAsync(VillaCreateDto createDto)
         {
             try
             {
-                var villaSpecification = new FindVillaSpecification(villaCreateDto.Name, villaCreateDto.VillaNumber);
+                var villaSpecification = new FindVillaSpecification(createDto.Name, createDto.VillaNumber);
 
                 var isExist = await _unitOfWork.Villas.FindSingle(villaSpecification);
 
@@ -140,7 +143,7 @@ namespace BusinessLogicLayer.Services
                     return _response;
                 }
 
-                var villa = _mapper.Map<Villa>(villaCreateDto);
+                var villa = _mapper.Map<Villa>(createDto);
 
                 var villaStatusSpecification = new FindVillaStatusSpecification(VillaStatusSD.Available);
 
@@ -156,7 +159,27 @@ namespace BusinessLogicLayer.Services
 
                 villa.Status = status;
                 villa.StatusId = status.Id;
+                villa.Id = Guid.NewGuid();
 
+                if (createDto.Image != null)
+                {
+                    var fileName = villa.Id + Path.GetExtension(createDto.Image.FileName);
+                    var filePath = @"wwwroot\VillaImages\" + fileName;
+
+                    var directoryLocation = Path.Combine(Directory.GetCurrentDirectory(), filePath);
+                    
+                    var baseUrl =
+                        $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host.Value}{_httpContextAccessor.HttpContext.Request.PathBase.Value}";
+                    createDto.ImageUrl = baseUrl + "/VillaImages/" + fileName;
+                    createDto.ImageLocalPath = filePath;
+
+                    await using var fileStream = new FileStream(directoryLocation, FileMode.Create);
+                    await createDto.Image.CopyToAsync(fileStream);
+                }
+                else
+                {
+                    createDto.ImageUrl = "https://placehold.co/600x400";
+                }
 
                 await _unitOfWork.Villas.CreateAsync(villa);
                 await _unitOfWork.SaveChangesAsync();
@@ -196,7 +219,7 @@ namespace BusinessLogicLayer.Services
                 if (status == null)
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
-                    _response.ErrorMessage.Add($"Status {updateDto.Status} does not exist!");
+                    _response.ErrorMessage.Add($"Status {updateDto.VillaStatusId} does not exist!");
                     return _response;
                 }
 
@@ -207,6 +230,38 @@ namespace BusinessLogicLayer.Services
                 villa.VillaDetails.Id = villaFromDb.VillaDetails.Id;
                 villa.VillaDetails.Villa = villa;
                 villa.VillaDetails.CreatedDate = villaFromDb.VillaDetails.CreatedDate;
+
+                if (updateDto.Image != null)
+                {
+                    if (!string.IsNullOrEmpty(villaFromDb.ImageLocalPath))
+                    {
+                        var oldFilePathDirectory = Path.Combine(Directory.GetCurrentDirectory(), villaFromDb.ImageLocalPath);
+                        FileInfo file = new FileInfo(oldFilePathDirectory);
+
+                        if (file.Exists)
+                        {
+                            file.Delete();
+                        }
+                    }
+
+                    var fileName = villa.Id + Path.GetExtension(updateDto.Image.FileName);
+                    var filePath = @"wwwroot\VillaImages\" + fileName;
+
+                    var directoryLocation = Path.Combine(Directory.GetCurrentDirectory(), filePath);
+
+                    var baseUrl =
+                        $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host.Value}{_httpContextAccessor.HttpContext.Request.PathBase.Value}";
+                    villa.ImageUrl = baseUrl + "/VillaImages/" + fileName;
+                    villa.ImageLocalPath = filePath;
+
+                    await using var fileStream = new FileStream(directoryLocation, FileMode.Create);
+                    await updateDto.Image.CopyToAsync(fileStream);
+                }
+                else
+                {
+                    villa.ImageUrl = villaFromDb.ImageUrl;
+                    villa.ImageLocalPath = villaFromDb.ImageLocalPath;
+                }
 
                 _unitOfWork.Villas.Update(villa);
                 await _unitOfWork.SaveChangesAsync();

@@ -12,16 +12,21 @@ namespace BusinessLogicLayer.Dto.Order
     {
         [Required]
         public Guid Id { get; set; }
+
         [Required]
         public DateTime CheckIn { get; set; }
+
         [Required]
         public DateTime CheckOut { get; set; }
-        [JsonIgnore]
-        public Guid VillaId { get; set; }
-        [JsonIgnore]
-        public Guid UserId { get; set; }
-        [JsonIgnore]
-        public Guid StatusId { get; set; }
 
+        [JsonIgnore]
+        public Guid? VillaId { get; set; }
+
+        [JsonIgnore]
+        public Guid? UserId { get; set; }
+
+        [JsonIgnore]
+        public Guid? StatusId { get; set; }
+        
     }
 }

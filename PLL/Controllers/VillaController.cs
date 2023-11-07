@@ -74,7 +74,7 @@ namespace PLL.Controllers
         [HttpPost("create-villa")]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<ApiResponse>> CreateVillaAsync([FromBody] VillaCreateDto createDto)
+        public async Task<ActionResult<ApiResponse>> CreateVillaAsync([FromForm] VillaCreateDto createDto)
         {
             var response = await _villaService.CreateVillaAsync(createDto);
 
@@ -86,7 +86,7 @@ namespace PLL.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<ApiResponse>> UpdateVillaAsync([FromBody] VillaUpdateDto updateDto)
+        public async Task<ActionResult<ApiResponse>> UpdateVillaAsync([FromForm] VillaUpdateDto updateDto)
         {
             var response = await _villaService.UpdateVillaAsync(updateDto);
 

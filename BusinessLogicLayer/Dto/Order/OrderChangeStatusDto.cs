@@ -11,6 +11,7 @@ namespace BusinessLogicLayer.Dto.Order
     {
         [Required]
         public Guid Id { get; set; }
+
         [Required]
         public Guid StatusId { get; set; }
     }

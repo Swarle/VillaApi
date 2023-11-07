@@ -51,7 +51,7 @@ namespace PLL.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<ApiResponse>> UpdateUserAsync(UserUpdateDto updateDto)
+        public async Task<ActionResult<ApiResponse>> UpdateUserAsync([FromBody]UserUpdateDto updateDto)
         {
             var response = await _userService.UpdateUserAsync(updateDto);
 
@@ -65,7 +65,7 @@ namespace PLL.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<ApiResponse>> ChangePasswordAsync(ChangePasswordDto changePasswordDto)
+        public async Task<ActionResult<ApiResponse>> ChangePasswordAsync([FromBody]ChangePasswordDto changePasswordDto)
         {
             var response = await _userService.ChangePasswordAsync(changePasswordDto);
 
