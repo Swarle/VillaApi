@@ -48,7 +48,13 @@ namespace PLL
 
             builder.Host.UseSerilog(logger);
 
-            builder.Services.AddControllers()
+            builder.Services.AddControllers(options =>
+                {
+                    options.CacheProfiles.Add("Default",new CacheProfile
+                    {
+                        Duration = 30
+                    });
+                })
                 .ConfigureApiBehaviorOptions(options =>
                 {
                     options.InvalidModelStateResponseFactory = context =>
@@ -72,6 +78,8 @@ namespace PLL
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddResponseCaching();
 
             builder.Services.AddScoped<IRepository<Villa>, VillaRepository>();
             builder.Services.AddScoped<IRepository<Orders>, OrderRepository>();

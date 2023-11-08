@@ -19,6 +19,7 @@ namespace PLL.Controllers
         }
 
         [HttpGet("get-orders")]
+        [ResponseCache(CacheProfileName = "Default")]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -30,6 +31,7 @@ namespace PLL.Controllers
         }
 
         [HttpGet("get-orders-by-userId/{userId:guid}")]
+        [ResponseCache(CacheProfileName = "Default")]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse))]
@@ -42,6 +44,7 @@ namespace PLL.Controllers
         }
 
         [HttpGet("get-order-statuses")]
+        [ResponseCache(CacheProfileName = "Default")]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -53,6 +56,7 @@ namespace PLL.Controllers
         }
 
         [HttpGet("get-order/{id:guid}")]
+        [ResponseCache(CacheProfileName = "Default")]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse))]

@@ -20,6 +20,7 @@ namespace PLL.Controllers
 
         [HttpGet("get-all-users")]
         [Authorize("AdminPolicy")]
+        [ResponseCache(CacheProfileName = "Default")]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -33,6 +34,7 @@ namespace PLL.Controllers
         }
 
         [HttpGet("get-user/{id:guid}")]
+        [ResponseCache(CacheProfileName = "Default")]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse))]

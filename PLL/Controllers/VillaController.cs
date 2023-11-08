@@ -26,6 +26,7 @@ namespace PLL.Controllers
 
 
         [HttpGet("get-villa-partial")]
+        [ResponseCache(CacheProfileName = "Default")]
         [ProducesResponseType(StatusCodes.Status404NotFound,Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -37,6 +38,7 @@ namespace PLL.Controllers
         }
 
         [HttpGet("get-villas-statuses")]
+        [ResponseCache(CacheProfileName = "Default")]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -49,6 +51,7 @@ namespace PLL.Controllers
         
 
         [HttpGet("get-villas")]
+        [ResponseCache(CacheProfileName = "Default")]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -60,6 +63,7 @@ namespace PLL.Controllers
         }
 
         [HttpGet("get-villa/{id:Guid}")]
+        [ResponseCache(CacheProfileName = "Default")]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse))]
