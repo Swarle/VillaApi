@@ -18,6 +18,7 @@ using DataLayer.UnitOfWork.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using Azure;
 using BusinessLogicLayer.Dto.Villa;
+using BusinessLogicLayer.Infastructure;
 using Microsoft.AspNetCore.Http;
 
 namespace BusinessLogicLayer.Services
@@ -28,20 +29,28 @@ namespace BusinessLogicLayer.Services
         private readonly IMapper _mapper;
         private readonly ApiResponse _response;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IUriService _uriService;
 
-        public VillaService(IUnitOfWork unitOfWork, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        public VillaService(IUnitOfWork unitOfWork, IMapper mapper, IHttpContextAccessor httpContextAccessor,IUriService uriService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _response = new ApiResponse();
             _httpContextAccessor = httpContextAccessor;
+            _uriService = uriService;
         }
 
-        public async Task<ApiResponse> GetVillasPartialAsync()
+        public async Task<ApiResponse> GetVillasPartialAsync(PaginationFilter filter)
         {
             try
             {
-                var villas = await _unitOfWork.Villas.GetAllAsync();
+                var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
+
+                var paginationSpecification = new PagingSpecification((validFilter.PageNumber - 1), validFilter.PageSize);
+
+                var villaPaginationSpecification = new VillaPaginationSpecification(paginationSpecification);
+
+                var villas = await _unitOfWork.Villas.Find(villaPaginationSpecification);
 
                 if (!villas.Any())
                 {
@@ -50,10 +59,17 @@ namespace BusinessLogicLayer.Services
                     return _response;
                 }
 
-                var villaPartialDto = _mapper.Map<IEnumerable<VillaPartialDto>>(villas);
+                var villasPartialDto = _mapper.Map<List<VillaPartialDto>>(villas);
 
-                _response.Result = villaPartialDto;
+                var route = _httpContextAccessor.HttpContext.Request.Path.Value;
+
+                var totalRecords = (await _unitOfWork.Villas.GetAllAsync()).Count();
+
+                var pagedResponse = PaginationHelper.CreatePagedResponse<VillaPartialDto>(villasPartialDto, filter,
+                    totalRecords, _uriService, route);
+
                 _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = pagedResponse;
             }
             catch (Exception ex)
             {

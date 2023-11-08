@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Mime;
 using BusinessLogicLayer.Dto.Villa;
+using BusinessLogicLayer.Infastructure;
 using BusinessLogicLayer.Infrastructure;
 using BusinessLogicLayer.Services.Interfaces;
 using DataLayer.Context;
@@ -25,15 +26,15 @@ namespace PLL.Controllers
         }
 
 
-        [HttpGet("get-villa-partial")]
+        [HttpGet("get-villas-partial")]
         [ResponseCache(CacheProfileName = "Default")]
         [ProducesResponseType(StatusCodes.Status404NotFound,Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ApiResponse))]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<ApiResponse>> GetVillasPartialAsync()
+        public async Task<ActionResult<ApiResponse>> GetVillasPartialAsync([FromQuery]PaginationFilter filter)
         {
-            var response = await _villaService.GetVillasPartialAsync();
-
+            var response = await _villaService.GetVillasPartialAsync(filter);
+            
             return StatusCode((int)response.StatusCode,response);
         }
 

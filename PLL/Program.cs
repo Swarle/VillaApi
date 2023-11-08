@@ -98,6 +98,13 @@ namespace PLL
             builder.Services.AddScoped<IAuthService,AuthService>();
             builder.Services.AddScoped<IUserService,UserService>();
             builder.Services.AddScoped<IOrderService,OrderService>();
+            builder.Services.AddSingleton<IUriService>(options =>
+            {
+                var accessor = options.GetRequiredService<IHttpContextAccessor>();
+                var request = accessor.HttpContext.Request;
+                var uri = string.Concat(request.Scheme, "://", request.Host.ToUriComponent());
+                return new UriService(uri);
+            });
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             

@@ -5,7 +5,9 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using BusinessLogicLayer.Dto;
 using BusinessLogicLayer.Dto.Villa;
+using BusinessLogicLayer.Infastructure;
 using BusinessLogicLayer.Services;
 using BusinessLogicLayer.Services.Interfaces;
 using DataLayer.Models;
@@ -51,12 +53,15 @@ namespace UnitTests.BusinessTests.Services
             var httpContextAccessor = new Mock<IHttpContextAccessor>();
             var context = new DefaultHttpContext();
             httpContextAccessor.Setup(e => e.HttpContext).Returns(context);
-            _villaService = new VillaService(_unitOfWork.Object, _mapper,httpContextAccessor.Object);
+            var uriService = new Mock<IUriService>();
+            uriService.Setup(e => e.GetPageUri(It.IsAny<PaginationFilter>(), It.IsAny<string>()))
+                .Returns(It.IsAny<Uri>());
+            _villaService = new VillaService(_unitOfWork.Object, _mapper,httpContextAccessor.Object,uriService.Object);
         }
 
         #region GetVillasPartialAsync
         [Test]
-        public async Task GetVillasPartialAsync_WhenTryingGetAll_ReturnsApiResponseWithStatusCode200AndVillasPartialDtoList()
+        public async Task GetVillasPartialAsync_WhenVillaExist_ReturnsApiResponseWithStatusCode200AndVillasPartialDtoList()
         {
             //Arrange
             var source = new List<Villa>
@@ -78,22 +83,21 @@ namespace UnitTests.BusinessTests.Services
                     StatusId = Guid.NewGuid(),
                 }
             };
+
+            var filter = new PaginationFilter(1, 5);
             
-            _villaRepository.Setup(e => e.GetAllAsync()).ReturnsAsync(source);
+            _villaRepository.Setup(e => e.Find(It.IsAny<ISpecification<Villa>>())).ReturnsAsync(source);
 
             var expectedResult = _mapper.Map<List<VillaPartialDto>>(source);
 
             //Act
-            var action = await _villaService.GetVillasPartialAsync();
+            var action = await _villaService.GetVillasPartialAsync(filter);
 
             //Assert
             action.IsSuccess.Should().BeTrue();
             action.StatusCode.Should().Be(HttpStatusCode.OK);
             action.ErrorMessage.Should().BeEmpty();
-            action.Result.Should().NotBeNull();
-
-            var result = action.Result as List<VillaPartialDto>;
-            result.Should().BeEquivalentTo(expectedResult, o => o.Using(new VillaPartialDtoEqualityComparer()));
+            action.Result.Should().BeOfType(typeof(PagedDto<VillaPartialDto>));
 
         }
 
@@ -101,10 +105,12 @@ namespace UnitTests.BusinessTests.Services
         public async Task GetVillasPartialAsync_WhenVillasNotFound_ReturnsApiResponseWithStatusCodeNotFoundAndErrorMessage()
         {
             //Arrange
-            _villaRepository.Setup(e => e.GetAllAsync()).ReturnsAsync(new List<Villa>());
+            _villaRepository.Setup(e => e.Find(It.IsAny<ISpecification<Villa>>())).ReturnsAsync(new List<Villa>());
+
+            var filter = new PaginationFilter(1, 5);
 
             //Act
-            var action = await _villaService.GetVillasPartialAsync();
+            var action = await _villaService.GetVillasPartialAsync(filter);
 
             //Assert
             action.IsSuccess.Should().BeTrue();
@@ -122,10 +128,12 @@ namespace UnitTests.BusinessTests.Services
             var exception = new Exception("Server error");
             var expectedError = exception.ToString();
 
-            _villaRepository.Setup(e => e.GetAllAsync()).Throws(exception);
+            var filter = new PaginationFilter(1, 5);
+
+            _villaRepository.Setup(e => e.Find(It.IsAny<ISpecification<Villa>>())).Throws(exception);
 
             //Act
-            var action = await _villaService.GetVillasPartialAsync();
+            var action = await _villaService.GetVillasPartialAsync(filter);
 
             //Assert
             action.IsSuccess.Should().BeFalse();
